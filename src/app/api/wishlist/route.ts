@@ -18,12 +18,10 @@ export async function POST(req: Request) {
     }
 
     // Check if already wishlisted
-    const existing = await prisma.wishlist.findUnique({
+    const existing = await prisma.wishlist.findFirst({
       where: {
-        userId_bookId: {
-          userId: session.user.id,
-          bookId: bookId
-        }
+        userId: session.user.id,
+        bookId: bookId
       }
     });
 

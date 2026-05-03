@@ -30,12 +30,10 @@ export default async function BookDetail({ params }: { params: any }) {
   let isWishlisted = false;
   if (session?.user) {
     try {
-      const wish = await prisma.wishlist.findUnique({
+      const wish = await prisma.wishlist.findFirst({
         where: {
-          userId_bookId: {
-            userId: session.user.id,
-            bookId: book.id
-          }
+          userId: session.user.id,
+          bookId: book.id
         }
       });
       isWishlisted = !!wish;
