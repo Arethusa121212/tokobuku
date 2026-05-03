@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import BookInteraction from "@/components/BookInteraction";
 
-export default async function BookDetail({ params }: { params: { id: string } }) {
+export default async function BookDetail({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const resolvedParams = await params;
   
