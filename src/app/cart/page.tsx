@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import RemoveFromCartButton from "@/components/RemoveFromCartButton";
+import CartItemInteraction from "@/components/CartItemInteraction";
 
 export default async function CartPage() {
   const session = await getServerSession(authOptions);
@@ -14,32 +15,35 @@ export default async function CartPage() {
 
   const cartItems = await prisma.cartItem.findMany({
     where: { userId: session.user.id },
-    include: { book: true }
+    include: { book: true },
+    orderBy: { id: 'asc' }
   });
 
   const total = cartItems.reduce((acc, item) => acc + (item.book.price * item.quantity), 0);
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 0' }}>
-      <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '2rem' }}>Keranjang Belanja</h1>
+    <div style={{ maxWidth: '800px', margin: '4rem auto', padding: '0 1rem' }}>
+      <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '2.5rem', textAlign: 'center' }}>Keranjang Belanja</h1>
       
       {cartItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--color-surface)', borderRadius: '12px', color: 'var(--color-text-secondary)' }}>
-          <p style={{ marginBottom: '1rem' }}>Keranjang belanja Anda masih kosong.</p>
-          <Link href="/" className="btn-primary" style={{ display: 'inline-block' }}>Mulai Belanja</Link>
+        <div style={{ textAlign: 'center', padding: '4rem', background: 'var(--color-surface)', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
+          <p style={{ marginBottom: '1.5rem', fontSize: '1.1rem', color: 'var(--color-text-secondary)' }}>Keranjang belanja Anda masih kosong.</p>
+          <Link href="/" className="btn-primary" style={{ display: 'inline-block', padding: '0.8rem 2rem' }}>Mulai Belanja</Link>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
             {cartItems.map((item) => (
-              <div key={item.id} style={{ display: 'flex', gap: '1.5rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', alignItems: 'center' }}>
+              <div key={item.id} style={{ display: 'flex', gap: '1.5rem', padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '20px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', alignItems: 'center', border: '1.5px solid var(--color-border)' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.book.imageUrl || 'https://via.placeholder.com/150x200?text=Cover+Buku'} alt={item.book.title} style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '8px' }} />
+                <img src={item.book.imageUrl || 'https://via.placeholder.com/150x200?text=Cover+Buku'} alt={item.book.title} style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '12px' }} />
                 
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.5rem' }}>{item.book.title}</h3>
-                  <div style={{ color: 'var(--color-primary)', fontWeight: 700 }}>Rp {item.book.price.toLocaleString('id-ID')}</div>
-                  <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem' }}>Kuantitas: {item.quantity}</div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.4rem' }}>{item.book.title}</h3>
+                  <div style={{ color: 'var(--color-primary)', fontWeight: 800, fontSize: '1.1rem' }}>Rp {item.book.price.toLocaleString('id-ID')}</div>
+                  <div style={{ marginTop: '0.8rem' }}>
+                    <CartItemInteraction cartItemId={item.id} initialQuantity={item.quantity} />
+                  </div>
                 </div>
                 
                 <div>
