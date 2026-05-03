@@ -42,7 +42,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Ditambahkan ke Wishlist", active: true }, { status: 201 });
     }
   } catch (error: any) {
-    return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 });
+    console.error("WISHLIST_ERROR:", error);
+    return NextResponse.json({ 
+      message: "Terjadi kesalahan internal", 
+      error: error.message,
+      stack: error.stack 
+    }, { status: 500 });
   }
 }
 
