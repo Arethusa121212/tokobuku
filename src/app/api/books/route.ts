@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
   try {
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
       }
     });
 
+    revalidatePath("/");
     return NextResponse.json({ message: "Book created", book: newBook }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 });
@@ -60,6 +62,7 @@ export async function DELETE(req: Request) {
       where: { id: bookId }
     });
 
+    revalidatePath("/");
     return NextResponse.json({ message: "Book deleted" }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 });
