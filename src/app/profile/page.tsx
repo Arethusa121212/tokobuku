@@ -58,7 +58,65 @@ export default function ProfilePage() {
     return <div style={{ textAlign: 'center', padding: '4rem' }}>Silakan login untuk melihat profil.</div>;
   }
 
-  // ... (handleImageUpload and handleSubmit remain the same)
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 2MB");
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setImage(data.imageUrl);
+        toast.success("Foto berhasil diunggah!");
+      } else {
+        toast.error(data.message || "Gagal mengunggah foto");
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat mengunggah");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, image }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Profil berhasil diperbarui!");
+        // Update session client-side
+        await update({ name, image });
+        router.refresh();
+      } else {
+        toast.error(data.message || "Gagal memperbarui profil");
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan sistem");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ maxWidth: '1000px', margin: '4rem auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', padding: '0 1rem' }}>
