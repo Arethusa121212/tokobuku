@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function AddToCartButton({ bookId, stock }: { bookId: string, stock: number }) {
   const { data: session } = useSession();
@@ -11,6 +12,7 @@ export default function AddToCartButton({ bookId, stock }: { bookId: string, sto
 
   const handleAddToCart = async () => {
     if (!session) {
+      toast.error("Silakan login terlebih dahulu");
       router.push("/login");
       return;
     }
@@ -24,14 +26,20 @@ export default function AddToCartButton({ bookId, stock }: { bookId: string, sto
       });
 
       if (res.ok) {
-        alert("Buku berhasil ditambahkan ke keranjang!");
+        toast.success("🛒 Berhasil ditambahkan ke keranjang!", {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
         router.refresh();
       } else {
         const data = await res.json();
-        alert(data.message || "Gagal menambahkan ke keranjang");
+        toast.error(data.message || "Gagal menambahkan ke keranjang");
       }
     } catch (error) {
-      alert("Terjadi kesalahan sistem");
+      toast.error("Terjadi kesalahan sistem");
     } finally {
       setLoading(false);
     }
