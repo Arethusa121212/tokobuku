@@ -47,6 +47,7 @@ model User {
   sessions      Session[]
   books         Book[]    @relation("SellerBooks")
   cartItems     CartItem[]
+  wishlist      Wishlist[]
 }
 
 model VerificationToken {
@@ -70,6 +71,7 @@ model Book {
   sellerId    String
   seller      User     @relation("SellerBooks", fields: [sellerId], references: [id])
   cartItems   CartItem[]
+  wishlistedBy Wishlist[]
 }
 
 model CartItem {
@@ -79,6 +81,19 @@ model CartItem {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   bookId    String
   book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
