@@ -6,16 +6,31 @@ import Link from "next/link";
 
 export default function Register() {
   const router = useRouter();
+  const [step, setStep] = useState<"choose" | "form">("choose");
+  const [role, setRole] = useState<"CUSTOMER" | "SELLER" | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CUSTOMER");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordValid = password.length >= 8 && /[A-Z]/.test(password);
   const emailValid = emailRegex.test(email);
+
+  const handleRoleSelect = (selectedRole: "CUSTOMER" | "SELLER") => {
+    setRole(selectedRole);
+    setStep("form");
+  };
+
+  const handleBack = () => {
+    setStep("choose");
+    setRole(null);
+    setName("");
+    setEmail("");
+    setPassword("");
+    setError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +40,10 @@ export default function Register() {
       setError("Format email tidak valid. Gunakan format email resmi (contoh: nama@email.com)");
       return;
     }
-
     if (password.length < 8) {
       setError("Password harus minimal 8 karakter");
       return;
     }
-
     if (!/[A-Z]/.test(password)) {
       setError("Password harus mengandung minimal 1 huruf besar");
       return;
@@ -58,75 +71,210 @@ export default function Register() {
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '0.85rem 1rem', borderRadius: '10px',
+    border: '1.5px solid var(--color-border)', fontSize: '1rem',
+    outline: 'none', transition: 'border-color 0.2s',
+  };
+
+  // Step 1: Choose Role
+  if (step === "choose") {
+    return (
+      <div style={{ maxWidth: '520px', margin: '4rem auto', padding: '2.5rem', background: 'var(--color-surface)', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
+        <h1 style={{ textAlign: 'center', marginBottom: '0.5rem', color: 'var(--color-text-primary)', fontSize: '1.8rem', fontWeight: 800 }}>
+          Buat Akun Baru
+        </h1>
+        <p style={{ textAlign: 'center', marginBottom: '2.5rem', color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
+          Pilih jenis akun yang ingin Anda daftarkan
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Customer Card */}
+          <button
+            onClick={() => handleRoleSelect("CUSTOMER")}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '1.2rem',
+              padding: '1.5rem', borderRadius: '12px',
+              border: '2px solid var(--color-border)', background: 'var(--color-bg)',
+              cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              e.currentTarget.style.background = '#f0fdf4';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,170,91,0.12)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+              e.currentTarget.style.background = 'var(--color-bg)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>🛒</div>
+            <div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.3rem' }}>
+                Daftar sebagai Pembeli
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                Jelajahi dan beli buku dari berbagai penjual
+              </div>
+            </div>
+            <div style={{ marginLeft: 'auto', fontSize: '1.2rem', color: 'var(--color-text-secondary)' }}>→</div>
+          </button>
+
+          {/* Seller Card */}
+          <button
+            onClick={() => handleRoleSelect("SELLER")}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '1.2rem',
+              padding: '1.5rem', borderRadius: '12px',
+              border: '2px solid var(--color-border)', background: 'var(--color-bg)',
+              cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#f59e0b';
+              e.currentTarget.style.background = '#fffbeb';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(245,158,11,0.12)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+              e.currentTarget.style.background = 'var(--color-bg)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <div style={{ fontSize: '2.5rem', lineHeight: 1 }}>📚</div>
+            <div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.3rem' }}>
+                Daftar sebagai Penjual
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                Buka toko online dan jual buku Anda
+              </div>
+            </div>
+            <div style={{ marginLeft: 'auto', fontSize: '1.2rem', color: 'var(--color-text-secondary)' }}>→</div>
+          </button>
+        </div>
+
+        <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+          Sudah punya akun? <Link href="/login" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Masuk di sini</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Registration Form
+  const isSeller = role === "SELLER";
+
   return (
-    <div style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', background: 'var(--color-surface)', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '2rem', color: 'var(--color-primary)', fontSize: '1.8rem' }}>Daftar Akun Baru</h1>
-      
-      {error && <div style={{ padding: '1rem', marginBottom: '1rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px', fontSize: '0.9rem' }}>{error}</div>}
-      
+    <div style={{ maxWidth: '420px', margin: '4rem auto', padding: '2.5rem', background: 'var(--color-surface)', borderRadius: '16px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
+      {/* Header with back button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '2rem' }}>
+        <button
+          onClick={handleBack}
+          style={{
+            background: 'var(--color-bg)', border: '1.5px solid var(--color-border)',
+            borderRadius: '10px', padding: '0.5rem 0.8rem', cursor: 'pointer',
+            fontSize: '1rem', color: 'var(--color-text-secondary)', transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.color = 'var(--color-primary)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.color = 'var(--color-text-secondary)'; }}
+        >
+          ← Kembali
+        </button>
+        <div>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+            {isSeller ? "Daftar Penjual" : "Daftar Pembeli"}
+          </h1>
+          <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', margin: 0 }}>
+            {isSeller ? "📚 Buat akun toko buku Anda" : "🛒 Buat akun pembeli Anda"}
+          </p>
+        </div>
+      </div>
+
+      {/* Role Badge */}
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+        padding: '0.4rem 0.8rem', borderRadius: '20px', marginBottom: '1.5rem',
+        fontSize: '0.8rem', fontWeight: 600,
+        background: isSeller ? '#fffbeb' : '#f0fdf4',
+        color: isSeller ? '#b45309' : '#15803d',
+        border: `1px solid ${isSeller ? '#fde68a' : '#bbf7d0'}`,
+      }}>
+        {isSeller ? "📚 Penjual" : "🛒 Pembeli"}
+      </div>
+
+      {error && (
+        <div style={{ padding: '0.8rem 1rem', marginBottom: '1.2rem', background: '#fee2e2', color: '#b91c1c', borderRadius: '10px', fontSize: '0.85rem', border: '1px solid #fca5a5' }}>
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Nama Lengkap</label>
-          <input 
-            type="text" 
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>
+            {isSeller ? "Nama Toko" : "Nama Lengkap"}
+          </label>
+          <input
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '1rem' }}
+            placeholder={isSeller ? "Contoh: Toko Buku Sejahtera" : "Contoh: Budi Santoso"}
+            style={inputStyle}
           />
         </div>
+
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Email</label>
-          <input 
-            type="email" 
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Email</label>
+          <input
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="nama@email.com"
-            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: `1px solid ${email && !emailValid ? '#ef4444' : 'var(--color-border)'}`, fontSize: '1rem' }}
+            style={{ ...inputStyle, borderColor: email && !emailValid ? '#ef4444' : 'var(--color-border)' }}
           />
           {email && !emailValid && (
-            <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.3rem' }}>Gunakan format email resmi (contoh: nama@email.com)</p>
+            <p style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.3rem' }}>Gunakan format email resmi (contoh: nama@email.com)</p>
           )}
         </div>
+
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Password</label>
-          <input 
-            type="password" 
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Password</label>
+          <input
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Minimal 8 karakter, 1 huruf besar"
-            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: `1px solid ${password && !passwordValid ? '#ef4444' : 'var(--color-border)'}`, fontSize: '1rem' }}
+            style={{ ...inputStyle, borderColor: password && !passwordValid ? '#ef4444' : 'var(--color-border)' }}
           />
           {password && (
-            <div style={{ marginTop: '0.4rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-              <p style={{ fontSize: '0.8rem', color: password.length >= 8 ? '#16a34a' : '#ef4444' }}>
+            <div style={{ marginTop: '0.4rem', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+              <p style={{ fontSize: '0.78rem', color: password.length >= 8 ? '#16a34a' : '#ef4444', margin: 0 }}>
                 {password.length >= 8 ? '✓' : '✗'} Minimal 8 karakter ({password.length}/8)
               </p>
-              <p style={{ fontSize: '0.8rem', color: /[A-Z]/.test(password) ? '#16a34a' : '#ef4444' }}>
+              <p style={{ fontSize: '0.78rem', color: /[A-Z]/.test(password) ? '#16a34a' : '#ef4444', margin: 0 }}>
                 {/[A-Z]/.test(password) ? '✓' : '✗'} Minimal 1 huruf besar
               </p>
             </div>
           )}
         </div>
-        <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Daftar Sebagai</label>
-          <select 
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '1rem', background: 'white' }}
-          >
-            <option value="CUSTOMER">Pembeli (Customer)</option>
-            <option value="SELLER">Penjual (Seller)</option>
-          </select>
-        </div>
-        <button type="submit" disabled={loading} className="btn-primary" style={{ marginTop: '1rem', width: '100%', opacity: loading ? 0.7 : 1 }}>
-          {loading ? "Mendaftar..." : "Daftar"}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary"
+          style={{ marginTop: '0.5rem', width: '100%', padding: '0.9rem', fontSize: '1rem', opacity: loading ? 0.7 : 1 }}
+        >
+          {loading ? "Mendaftar..." : isSeller ? "Buat Akun Penjual" : "Buat Akun Pembeli"}
         </button>
       </form>
-      
-      <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+
+      <div style={{ marginTop: '1.8rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
         Sudah punya akun? <Link href="/login" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>Masuk di sini</Link>
       </div>
     </div>
