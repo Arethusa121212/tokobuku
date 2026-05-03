@@ -11,6 +11,7 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -242,16 +243,27 @@ export default function Register() {
           )}
         </div>
 
-        <div>
+        <div style={{ position: 'relative' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Password</label>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Minimal 8 karakter, 1 huruf besar"
-            style={{ ...inputStyle, borderColor: password && !passwordValid ? '#ef4444' : 'var(--color-border)' }}
+            style={{ ...inputStyle, paddingRight: '3rem', borderColor: password && !passwordValid ? '#ef4444' : 'var(--color-border)' }}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute', right: '0.8rem', top: '2.1rem',
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '1.2rem', color: 'var(--color-text-secondary)',
+            }}
+          >
+            {showPassword ? "👁️" : "👁️‍🗨️"}
+          </button>
           {password && (
             <div style={{ marginTop: '0.4rem', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
               <p style={{ fontSize: '0.78rem', color: password.length >= 8 ? '#16a34a' : '#ef4444', margin: 0 }}>

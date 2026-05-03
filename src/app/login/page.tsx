@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -9,11 +9,14 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     const res = await signIn("credentials", {
       redirect: false,
@@ -23,8 +26,15 @@ export default function Login() {
 
     if (res?.error) {
       setError("Email atau password salah");
+      setLoading(false);
     } else {
-      router.push("/");
+      // Get session to check role
+      const session = await getSession();
+      if (session?.user?.role === "SELLER") {
+        router.push("/dashboard");
+      } else {
+        router.push("/");
+      }
       router.refresh();
     }
   };
@@ -46,17 +56,35 @@ export default function Login() {
             style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '1rem' }}
           />
         </div>
-        <div>
+        <div style={{ position: 'relative' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Password</label>
           <input 
-            type="password" 
+            type={showPassword ? "text" : "password"} 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '1rem' }}
+            style={{ width: '100%', padding: '0.8rem', paddingRight: '3rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '1rem' }}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute', right: '0.8rem', top: '2.1rem',
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '1.2rem', color: 'var(--color-text-secondary)',
+            }}
+          >
+            {showPassword ? "👁️" : "👁️‍🗨️"}
+          </button>
         </div>
-        <button type="submit" className="btn-primary" style={{ marginTop: '1rem', width: '100%' }}>Masuk</button>
+        <button 
+          type="submit" 
+          className="btn-primary" 
+          disabled={loading}
+          style={{ marginTop: '1rem', width: '100%', opacity: loading ? 0.7 : 1 }}
+        >
+          {loading ? "Sedang Masuk..." : "Masuk"}
+        </button>
       </form>
       
       <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
