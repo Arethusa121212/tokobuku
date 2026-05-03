@@ -12,7 +12,6 @@ export default async function BookDetail({ params }: { params: { id: string } })
     where: { id: resolvedParams.id },
     include: { 
       seller: { select: { name: true } },
-      wishlistedBy: session?.user ? { where: { userId: session.user.id } } : false
     }
   });
 
@@ -20,7 +19,18 @@ export default async function BookDetail({ params }: { params: { id: string } })
     notFound();
   }
 
-  const isWishlisted = session?.user ? book.wishlistedBy.length > 0 : false;
+  let isWishlisted = false;
+  if (session?.user) {
+    const wish = await prisma.wishlist.findUnique({
+      where: {
+        userId_bookId: {
+          userId: session.user.id,
+          bookId: book.id
+        }
+      }
+    });
+    isWishlisted = !!wish;
+  }
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', background: 'var(--color-surface)', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
