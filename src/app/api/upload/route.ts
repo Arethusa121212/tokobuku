@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
 export async function POST(req: Request) {
   try {
@@ -28,30 +26,19 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (max 2MB for base64 storage)
+    if (file.size > 2 * 1024 * 1024) {
       return NextResponse.json(
-        { message: "Ukuran file maksimal 5MB" },
+        { message: "Ukuran file maksimal 2MB" },
         { status: 400 }
       );
     }
 
+    // Convert to base64 data URL (works on Vercel serverless)
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
-
-    // Generate unique filename
-    const ext = file.name.split(".").pop();
-    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const filePath = path.join(uploadsDir, uniqueName);
-
-    await writeFile(filePath, buffer);
-
-    // Return the public URL
-    const imageUrl = `/uploads/${uniqueName}`;
+    const base64 = buffer.toString("base64");
+    const imageUrl = `data:${file.type};base64,${base64}`;
 
     return NextResponse.json({ message: "Upload berhasil", imageUrl }, { status: 200 });
   } catch (error: any) {
