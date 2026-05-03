@@ -1,3 +1,5 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import BookInteraction from "@/components/BookInteraction";
@@ -5,6 +7,14 @@ import BookInteraction from "@/components/BookInteraction";
 export default async function BookDetail({ params }: { params: any }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
+
+  // Safe session fetch
+  let session = null;
+  try {
+    session = await getServerSession(authOptions);
+  } catch (e) {
+    console.error("Session fetch failed", e);
+  }
 
   const book = await prisma.book.findUnique({
     where: { id },
@@ -15,6 +25,23 @@ export default async function BookDetail({ params }: { params: any }) {
 
   if (!book) {
     notFound();
+  }
+
+  let isWishlisted = false;
+  if (session?.user) {
+    try {
+      const wish = await prisma.wishlist.findUnique({
+        where: {
+          userId_bookId: {
+            userId: session.user.id,
+            bookId: book.id
+          }
+        }
+      });
+      isWishlisted = !!wish;
+    } catch (e) {
+      console.error("Wishlist check failed", e);
+    }
   }
 
   return (
@@ -43,7 +70,7 @@ export default async function BookDetail({ params }: { params: any }) {
             bookId={book.id} 
             price={book.price} 
             stock={book.stock} 
-            isWishlistedInitial={false} 
+            isWishlistedInitial={isWishlisted} 
           />
         </div>
       </div>
