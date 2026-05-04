@@ -219,10 +219,12 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                     ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
                     : 0;
                   return (
-                    <Link href={`/books/${book.id}`} key={book.id} className="product-card animate-fade-in">
-                      <div className="product-image-container">
-                        <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover'} alt={book.title} className="product-image" />
-                      </div>
+                    <div key={book.id} className="product-card animate-fade-in">
+                      <Link href={`/books/${book.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div className="product-image-container">
+                          <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover'} alt={book.title} className="product-image" />
+                        </div>
+                      </Link>
                       <div className="product-info">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '0.2rem 0.5rem', borderRadius: '8px' }}>
@@ -230,15 +232,20 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                           </span>
                           {avgRating > 0 && <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f59e0b' }}>⭐ {avgRating.toFixed(1)}</span>}
                         </div>
-                        <h3 className="product-title">{book.title}</h3>
+                        <Link href={`/books/${book.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <h3 className="product-title">{book.title}</h3>
+                        </Link>
                         <div style={{ marginTop: 'auto' }}>
                           <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>Rp {book.price.toLocaleString('id-ID')}</div>
+                          <Link href={`/store/${book.sellerId}`} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.7rem', marginTop: '0.3rem', textDecoration: 'none' }} className="seller-link">
+                            <span>👤 {book.seller?.name || 'Anonim'}</span>
+                          </Link>
                           <div style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
                             📦 Stok: {book.stock}
                           </div>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>
