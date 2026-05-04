@@ -85,12 +85,16 @@ export default async function Home({ searchParams }: { searchParams: any }) {
           </div>
           <div style={{ display: 'flex', gap: '1.2rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
             {[
-              { name: 'Fiksi', icon: '🎨' },
+              { name: 'Fiksi', icon: '📖' },
               { name: 'Bisnis', icon: '📈' },
               { name: 'Teknologi', icon: '💻' },
               { name: 'Sejarah', icon: '🏺' },
               { name: 'Anak', icon: '🧸' },
               { name: 'Edukasi', icon: '🎓' },
+              { name: 'Komik', icon: '📚' },
+              { name: 'Religi', icon: '🕌' },
+              { name: 'Kesehatan', icon: '🏥' },
+              { name: 'Seni', icon: '🎨' },
             ].map((cat) => (
               <Link 
                 key={cat.name}
