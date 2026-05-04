@@ -48,20 +48,38 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Dashboard Penjual</h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/messages" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid #3b82f6', color: '#3b82f6', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+    <div style={{ paddingTop: '2rem' }}>
+      <div style={{ 
+        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', 
+        marginBottom: '3.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border)'
+      }}>
+        <div>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>Dashboard Penjual</h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontWeight: 500 }}>Kelola toko, pesanan, dan pesan Anda di sini.</p>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <Link href="/messages" style={{ 
+            padding: '0.8rem 1.4rem', borderRadius: '12px', border: '1.5px solid #3b82f6', 
+            color: '#3b82f6', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
+            transition: 'all 0.2s', background: 'white'
+          }} onMouseEnter={(e) => e.currentTarget.style.background = '#eff6ff'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
             💬 Pesan Masuk
           </Link>
-          <Link href="/dashboard/settings" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid var(--color-text-secondary)', color: 'var(--color-text-secondary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+          <Link href="/dashboard/settings" style={{ 
+            padding: '0.8rem 1.4rem', borderRadius: '12px', border: '1.5px solid var(--color-text-secondary)', 
+            color: 'var(--color-text-secondary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
+            transition: 'all 0.2s', background: 'white'
+          }} onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
             ⚙️ Pengaturan Toko
           </Link>
-          <Link href="/dashboard/orders" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid var(--color-primary)', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+          <Link href="/dashboard/orders" style={{ 
+            padding: '0.8rem 1.4rem', borderRadius: '12px', border: '1.5px solid var(--color-primary)', 
+            color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
+            transition: 'all 0.2s', background: 'white'
+          }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-light)'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
             📦 Pesanan Masuk
           </Link>
-          <Link href="/dashboard/new" className="btn-primary">
+          <Link href="/dashboard/new" className="btn-primary" style={{ padding: '0.8rem 1.6rem', borderRadius: '12px' }}>
             + Tambah Buku
           </Link>
         </div>

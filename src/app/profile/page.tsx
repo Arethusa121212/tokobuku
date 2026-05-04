@@ -236,8 +236,39 @@ export default function ProfilePage() {
         </form>
       </div>
 
-      {/* Conditional Section: Wishlist for Customer, Sales History for Seller */}
-      <div style={{ padding: '2.5rem', background: 'var(--color-surface)', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
+      {/* Conditional Section: Wishlist for Customer, Inbox & Sales History */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {/* Inbox Spot for Buyers */}
+        {!isSeller && (
+          <Link href="/messages" style={{ textDecoration: 'none' }}>
+            <div style={{ 
+              padding: '2rem', background: 'var(--color-primary)', borderRadius: '24px', 
+              boxShadow: '0 10px 30px rgba(0,170,91,0.2)', color: 'white',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              transition: 'transform 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <div>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.3rem' }}>Kotak Masuk</h3>
+                <p style={{ fontSize: '0.9rem', opacity: 0.9 }}>Lihat pesan dari penjual buku Anda</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <span style={{ fontSize: '2.5rem' }}>💬</span>
+                <span style={{ 
+                  background: 'white', color: 'var(--color-primary)', 
+                  fontWeight: 900, padding: '0.4rem 1rem', borderRadius: '12px',
+                  fontSize: '1.2rem'
+                }}>
+                  ➔
+                </span>
+              </div>
+            </div>
+          </Link>
+        )}
+
+        <div style={{ padding: '2.5rem', background: 'var(--color-surface)', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {isSeller ? (

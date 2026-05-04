@@ -23,7 +23,6 @@ export default function RootLayout({
         <Providers>
           <StatusTracker />
           <Navbar />
-          <ChatWidget />
           <main className="container" style={{ flex: 1 }}>
             {children}
           </main>

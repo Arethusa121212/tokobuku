@@ -126,27 +126,7 @@ export default async function StorePage({ params }: { params: Promise<{ id: stri
               </div>
           </div>
 
-          <hr style={{ margin: '2.5rem 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />
-
-          {/* Store Stats Bar */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '2rem' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--color-text-primary)' }}>⭐ {avgRating.toFixed(1)}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Rating Toko</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--color-text-primary)' }}>{totalBooks}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Total Buku</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--color-primary)' }}>{shippingSpeed}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Kecepatan Kirim</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--color-text-primary)' }}>{totalSales}+</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Produk Terjual</div>
-            </div>
-          </div>
+          <hr style={{ margin: '1.5rem 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />
         </div>
 
         {/* Store Content */}

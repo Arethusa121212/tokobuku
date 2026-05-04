@@ -87,37 +87,38 @@ export default function Navbar() {
 
         <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
           {session && session.user.role !== "SELLER" && (
-            <div 
-              onClick={() => {
-                const event = new CustomEvent("openChat", { 
-                  detail: { sellerId: 'all', sellerName: 'Pesan' } 
-                });
-                window.dispatchEvent(event);
-              }}
+            <Link 
+              href="/messages"
               style={{ 
                 position: 'relative', 
                 cursor: 'pointer', 
                 display: 'flex', 
                 alignItems: 'center', 
-                padding: '0.5rem',
-                borderRadius: '12px',
-                transition: 'background 0.2s'
+                gap: '0.4rem',
+                textDecoration: 'none',
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+                padding: '0.4rem 0.8rem',
+                borderRadius: '10px',
+                transition: 'all 0.2s',
+                background: unreadCount > 0 ? 'var(--color-primary-light)' : 'transparent'
               }}
-              className="nav-icon-btn"
+              className="nav-chat-btn"
             >
-              <span style={{ fontSize: '1.5rem' }}>💬</span>
+              <span style={{ fontSize: '1.4rem' }}>💬</span>
+              <span className="nav-label" style={{ fontSize: '0.85rem' }}>Pesan</span>
               {unreadCount > 0 && (
                 <span style={{
-                  position: 'absolute', top: '0', right: '0',
+                  position: 'absolute', top: '-2px', right: '-2px',
                   background: '#EF144A', color: 'white', borderRadius: '50%',
-                  width: '20px', height: '20px', fontSize: '0.7rem',
+                  width: '18px', height: '18px', fontSize: '0.65rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 800, border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  fontWeight: 800, border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
                   {unreadCount}
                 </span>
               )}
-            </div>
+            </Link>
           )}
 
           {session?.user?.role !== "SELLER" && (
