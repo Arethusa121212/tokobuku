@@ -99,8 +99,21 @@ export default async function DashboardOrdersPage() {
                         <span style={{ fontWeight: 600 }}>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</span>
                       </div>
                     ))}
-                    <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.8rem', textAlign: 'right', fontWeight: 800, color: 'var(--color-primary)' }}>
+                    <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.8rem', textAlign: 'right', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '1.5rem' }}>
                       Total Pendapatan: Rp {sellerTotal.toLocaleString('id-ID')}
+                    </div>
+
+                    {/* Customer & Shipping Info */}
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
+                      <p style={{ fontWeight: 700, fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>📍 Informasi Pengiriman</p>
+                      <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0.4rem', fontSize: '0.9rem' }}>
+                        <span style={{ color: '#64748b' }}>Penerima:</span>
+                        <span style={{ fontWeight: 600 }}>{order.user.name}</span>
+                        <span style={{ color: '#64748b' }}>Email:</span>
+                        <span>{order.user.email}</span>
+                        <span style={{ color: '#64748b' }}>Alamat:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--color-primary)' }}>{order.address || "Alamat tidak tersedia"}</span>
+                      </div>
                     </div>
                     
                     <OrderStatusActions orderId={order.id} currentStatus={order.status} />
