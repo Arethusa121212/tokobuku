@@ -282,8 +282,14 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                       <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-text-primary)', marginBottom: '0.4rem' }}>
                         Rp {book.price.toLocaleString('id-ID')}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
                         <span>👤 {book.seller?.name || 'Anonim'}</span>
+                        <span style={{ 
+                          padding: '0.2rem 0.5rem', background: book.stock > 0 ? '#f1f5f9' : '#fee2e2', 
+                          borderRadius: '6px', fontWeight: 700, color: book.stock > 0 ? '#475569' : '#ef4444' 
+                        }}>
+                          📦 Stok: {book.stock}
+                        </span>
                       </div>
                     </div>
                   </div>
