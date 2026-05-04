@@ -66,15 +66,12 @@ export default function PaymentUpload({ orderId }: PaymentUploadProps) {
         className="btn-primary"
         style={{ 
           padding: '0.6rem 1.2rem', fontSize: '0.9rem', 
-          background: '#3b82f6', border: 'none', 
-          opacity: loading ? 0.7 : 1 
+          background: loading ? '#94a3b8' : '#3b82f6', border: 'none', 
+          opacity: loading ? 0.7 : 1, width: '100%', borderRadius: '10px'
         }}
       >
-        {loading ? "Mengunggah..." : "📤 Unggah Bukti Bayar"}
+        {loading ? "⌛ Mengunggah..." : "📤 Unggah Bukti Bayar Sekarang"}
       </button>
-      <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.4rem' }}>
-        Transfer ke Rek BCA: 1234567890 a/n Tokobuku
-      </p>
     </div>
   );
 }
