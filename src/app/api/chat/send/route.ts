@@ -55,14 +55,16 @@ export async function POST(req: Request) {
     });
 
     // Trigger Pusher
-    await pusherServer.trigger(conversation.id, "new-message", message);
-    
-    // Trigger notification for receiver
-    await pusherServer.trigger(`user-${receiverId}`, "new-notification", {
-      from: session.user.name,
-      text: text.substring(0, 50),
-      conversationId: conversation.id
-    });
+    if (pusherServer) {
+      await pusherServer.trigger(conversation.id, "new-message", message);
+      
+      // Trigger notification for receiver
+      await pusherServer.trigger(`user-${receiverId}`, "new-notification", {
+        from: session.user.name,
+        text: text.substring(0, 50),
+        conversationId: conversation.id
+      });
+    }
 
     return NextResponse.json(message);
   } catch (error: any) {
