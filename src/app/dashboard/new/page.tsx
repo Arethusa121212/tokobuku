@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import Select from "react-select";
 
 export default function NewBookPage() {
   const router = useRouter();
@@ -60,8 +61,12 @@ export default function NewBookPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectChange = (selectedOption: any) => {
+    setFormData({ ...formData, categoryId: selectedOption ? selectedOption.value : "" });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +147,30 @@ export default function NewBookPage() {
   };
 
   const inputStyle = { width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '1rem' };
+  
+  const categoryOptions = categories.map(cat => ({
+    value: cat.id,
+    label: cat.name
+  }));
+
+  const customSelectStyles = {
+    control: (base: any) => ({
+      ...base,
+      padding: '0.3rem',
+      borderRadius: '8px',
+      border: '1px solid var(--color-border)',
+      boxShadow: 'none',
+      '&:hover': {
+        borderColor: 'var(--color-primary)'
+      }
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected ? 'var(--color-primary)' : state.isFocused ? '#f0fdf4' : 'white',
+      color: state.isSelected ? 'white' : 'var(--color-text-primary)',
+      cursor: 'pointer'
+    })
+  };
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', background: 'var(--color-surface)', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
@@ -170,13 +199,16 @@ export default function NewBookPage() {
         {/* Category */}
         <div>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Kategori</label>
-          <select name="categoryId" value={formData.categoryId} onChange={handleChange} style={inputStyle}>
-            <option value="">-- Pilih Kategori --</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+          <Select
+            options={categoryOptions}
+            placeholder="Cari atau pilih kategori..."
+            isClearable
+            isSearchable
+            onChange={handleSelectChange}
+            value={categoryOptions.find(opt => opt.value === formData.categoryId)}
+            styles={customSelectStyles}
+          />
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
             <input
               type="text"
               placeholder="Atau tambah kategori baru..."
