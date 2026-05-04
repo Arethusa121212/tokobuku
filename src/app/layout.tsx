@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: 'Toko Buku',
@@ -15,12 +16,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body>
+      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Providers>
           <Navbar />
-          <main className="container" style={{ padding: '2rem 0' }}>
+          <main className="container" style={{ padding: '2rem 0', flex: 1 }}>
             {children}
           </main>
+          <Footer />
         </Providers>
       </body>
     </html>

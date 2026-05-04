@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import BookInteraction from "@/components/BookInteraction";
+import ReviewSection from "@/components/ReviewSection";
 
 export default async function BookDetail({ params }: { params: any }) {
   const resolvedParams = await params;
@@ -20,6 +21,7 @@ export default async function BookDetail({ params }: { params: any }) {
     where: { id },
     include: { 
       seller: { select: { name: true } },
+      category: true,
     }
   });
 
@@ -43,34 +45,50 @@ export default async function BookDetail({ params }: { params: any }) {
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', background: 'var(--color-surface)', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-      <div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img 
-          src={book.imageUrl || 'https://via.placeholder.com/400x500?text=Cover+Buku'} 
-          alt={book.title} 
-          style={{ width: '100%', borderRadius: '12px', objectFit: 'cover', aspectRatio: '3/4', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }} 
-        />
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ maxWidth: '1000px', margin: '2rem auto', padding: '0 1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', background: 'var(--color-surface)', padding: '2rem', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
         <div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: '0.5rem', lineHeight: 1.2 }}>{book.title}</h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem' }}>Penjual: <span style={{ fontWeight: 600 }}>{book.seller?.name || 'Anonim'}</span></p>
-        </div>
-        
-        <div style={{ padding: '1.5rem', background: 'var(--color-bg)', borderRadius: '12px' }}>
-          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem' }}>Deskripsi Buku</h3>
-          <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{book.description}</p>
-        </div>
-        
-        <div style={{ marginTop: 'auto' }}>
-          <BookInteraction 
-            bookId={book.id} 
-            price={book.price} 
-            stock={book.stock} 
-            isWishlistedInitial={isWishlisted} 
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src={book.imageUrl || 'https://via.placeholder.com/400x500?text=Cover+Buku'} 
+            alt={book.title} 
+            style={{ width: '100%', borderRadius: '16px', objectFit: 'cover', aspectRatio: '3/4', boxShadow: '0 8px 30px rgba(0,0,0,0.1)' }} 
           />
         </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div>
+            {book.category && (
+              <span style={{
+                fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary)',
+                background: '#f0fdf4', padding: '0.3rem 0.8rem', borderRadius: '10px',
+                display: 'inline-block', marginBottom: '0.8rem'
+              }}>
+                {book.category.name}
+              </span>
+            )}
+            <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: '0.5rem', lineHeight: 1.2 }}>{book.title}</h1>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem' }}>Penjual: <span style={{ fontWeight: 600 }}>{book.seller?.name || 'Anonim'}</span></p>
+          </div>
+          
+          <div style={{ padding: '1.5rem', background: 'var(--color-bg)', borderRadius: '12px' }}>
+            <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem' }}>Deskripsi Buku</h3>
+            <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{book.description}</p>
+          </div>
+          
+          <div style={{ marginTop: 'auto' }}>
+            <BookInteraction 
+              bookId={book.id} 
+              price={book.price} 
+              stock={book.stock} 
+              isWishlistedInitial={isWishlisted} 
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div style={{ marginTop: '2rem', background: 'var(--color-surface)', padding: '2rem', borderRadius: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+        <ReviewSection bookId={book.id} />
       </div>
     </div>
   );

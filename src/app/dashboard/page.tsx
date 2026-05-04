@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import DeleteBookButton from "./DeleteBookButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
 
@@ -24,19 +26,56 @@ export default async function DashboardPage() {
 
   const books = await prisma.book.findMany({
     where: { sellerId: session.user.id },
+    include: { category: true },
     orderBy: { createdAt: "desc" },
   });
+
+  // Stats
+  const totalBooks = books.length;
+  const totalStock = books.reduce((acc, b) => acc + b.stock, 0);
+
+  // Get orders for seller's books
+  const sellerBookIds = books.map(b => b.id);
+  const orderItems = await prisma.orderItem.findMany({
+    where: { bookId: { in: sellerBookIds } },
+  });
+  const totalRevenue = orderItems.reduce((acc, i) => acc + i.price * i.quantity, 0);
+  const totalOrders = new Set(orderItems.map(i => i.orderId)).size;
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Dashboard Penjual</h1>
-        <Link href="/dashboard/new" className="btn-primary">
-          + Tambah Buku
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Link href="/dashboard/orders" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid var(--color-primary)', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+            📦 Pesanan Masuk
+          </Link>
+          <Link href="/dashboard/new" className="btn-primary">
+            + Tambah Buku
+          </Link>
+        </div>
       </div>
 
-      <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+      {/* Stats Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.2rem', marginBottom: '2rem' }}>
+        {[
+          { label: 'Total Buku', value: totalBooks, icon: '📚', color: '#3b82f6' },
+          { label: 'Total Stok', value: totalStock, icon: '📦', color: '#8b5cf6' },
+          { label: 'Pesanan', value: totalOrders, icon: '🛒', color: '#f59e0b' },
+          { label: 'Pendapatan', value: `Rp ${totalRevenue.toLocaleString('id-ID')}`, icon: '💰', color: '#00AA5B' },
+        ].map((stat) => (
+          <div key={stat.label} style={{
+            background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '16px',
+            border: '1.5px solid var(--color-border)', boxShadow: '0 2px 10px rgba(0,0,0,0.04)'
+          }}>
+            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{stat.icon}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: stat.color }}>{stat.value}</div>
+            <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginTop: '0.3rem' }}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: '16px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
         <h2 style={{ fontSize: '1.2rem', marginBottom: '1.5rem', fontWeight: 600 }}>Koleksi Buku Anda</h2>
         
         {books.length === 0 ? (
@@ -48,6 +87,7 @@ export default async function DashboardPage() {
             <thead>
               <tr style={{ borderBottom: '2px solid var(--color-border)', textAlign: 'left' }}>
                 <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Judul Buku</th>
+                <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Kategori</th>
                 <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Harga</th>
                 <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Stok</th>
                 <th style={{ padding: '1rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>Aksi</th>
@@ -57,6 +97,13 @@ export default async function DashboardPage() {
               {books.map((book) => (
                 <tr key={book.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
                   <td style={{ padding: '1rem', fontWeight: 500 }}>{book.title}</td>
+                  <td style={{ padding: '1rem' }}>
+                    {book.category ? (
+                      <span style={{ background: '#f0fdf4', color: 'var(--color-primary)', padding: '0.2rem 0.6rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 600 }}>
+                        {book.category.name}
+                      </span>
+                    ) : '-'}
+                  </td>
                   <td style={{ padding: '1rem' }}>Rp {book.price.toLocaleString('id-ID')}</td>
                   <td style={{ padding: '1rem' }}>{book.stock}</td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>

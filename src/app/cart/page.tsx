@@ -58,9 +58,9 @@ export default async function CartPage() {
               <div style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem' }}>Total Belanja</div>
               <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>Rp {total.toLocaleString('id-ID')}</div>
             </div>
-            <button className="btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
+            <Link href="/checkout" className="btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', textDecoration: 'none', textAlign: 'center' }}>
               Checkout
-            </button>
+            </Link>
           </div>
         </div>
       )}

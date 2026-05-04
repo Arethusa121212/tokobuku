@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function NewBookPage() {
   const router = useRouter();
@@ -10,14 +11,56 @@ export default function NewBookPage() {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [newCategory, setNewCategory] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
     stock: "1",
+    categoryId: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch categories");
+    }
+  };
+
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) return;
+    try {
+      const res = await fetch("/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newCategory.trim() }),
+      });
+      if (res.ok) {
+        const cat = await res.json();
+        setCategories([...categories, cat]);
+        setFormData({ ...formData, categoryId: cat.id });
+        setNewCategory("");
+        toast.success("Kategori berhasil ditambahkan!");
+      } else {
+        const data = await res.json();
+        toast.error(data.message || "Gagal menambah kategori");
+      }
+    } catch (err) {
+      toast.error("Gagal menambah kategori");
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -60,7 +103,7 @@ export default function NewBookPage() {
 
         if (!uploadRes.ok) {
           const uploadErr = await uploadRes.json();
-          alert(uploadErr.message || "Gagal mengupload gambar");
+          toast.error(uploadErr.message || "Gagal mengupload gambar");
           setLoading(false);
           return;
         }
@@ -74,22 +117,25 @@ export default function NewBookPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          title: formData.title,
+          description: formData.description,
           price: parseInt(formData.price),
           stock: parseInt(formData.stock),
+          categoryId: formData.categoryId || null,
           imageUrl,
         }),
       });
 
       if (res.ok) {
+        toast.success("Buku berhasil ditambahkan! 📚");
         router.push("/dashboard");
         router.refresh();
       } else {
         const data = await res.json();
-        alert(data.message || "Gagal menambahkan buku");
+        toast.error(data.message || "Gagal menambahkan buku");
       }
     } catch (error) {
-      alert("Terjadi kesalahan sistem");
+      toast.error("Terjadi kesalahan sistem");
     } finally {
       setLoading(false);
     }
@@ -119,6 +165,36 @@ export default function NewBookPage() {
             name="description" required rows={4} value={formData.description} onChange={handleChange}
             style={{ ...inputStyle, resize: 'vertical' as const }}
           ></textarea>
+        </div>
+
+        {/* Category */}
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Kategori</label>
+          <select name="categoryId" value={formData.categoryId} onChange={handleChange} style={inputStyle}>
+            <option value="">-- Pilih Kategori --</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+            <input
+              type="text"
+              placeholder="Atau tambah kategori baru..."
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              style={{ ...inputStyle, flex: 1 }}
+            />
+            <button
+              type="button"
+              onClick={handleAddCategory}
+              style={{
+                padding: '0.8rem 1rem', borderRadius: '8px', background: 'var(--color-primary)',
+                color: 'white', fontWeight: 600, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
+              }}
+            >
+              + Tambah
+            </button>
+          </div>
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

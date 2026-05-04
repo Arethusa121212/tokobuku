@@ -48,6 +48,8 @@ model User {
   books         Book[]    @relation("SellerBooks")
   cartItems     CartItem[]
   wishlist      Wishlist[]
+  reviews       Review[]
+  orders        Order[]
 }
 
 model VerificationToken {
@@ -56,6 +58,12 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  books Book[]
 }
 
 model Book {
@@ -70,8 +78,14 @@ model Book {
 
   sellerId    String
   seller      User     @relation("SellerBooks", fields: [sellerId], references: [id])
-  cartItems   CartItem[]
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  cartItems    CartItem[]
   wishlistedBy Wishlist[]
+  reviews      Review[]
+  orderItems   OrderItem[]
 }
 
 model CartItem {
@@ -98,4 +112,45 @@ model Wishlist {
   book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@unique([userId, bookId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  totalAmount Int
+  status      String      @default("PENDING")
+  address     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  quantity  Int
+  price     Int
+
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  bookId    String
+  book      Book   @relation(fields: [bookId], references: [id])
 }
