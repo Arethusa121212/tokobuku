@@ -299,9 +299,11 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               <input type="email" placeholder="Email Anda..." style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: 'none', outline: 'none' }} />
               <button className="btn-primary">Daftar</button>
             </div>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
 
