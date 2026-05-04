@@ -92,15 +92,6 @@ export default function Navbar() {
         </div>
       </div>
       
-      {/* Mobile Styles Injection */}
-      <style jsx>{`
-        @media (max-width: 600px) {
-          .nav-label { display: none !important; }
-          .nav-icon-mobile { display: block !important; }
-          .nav-divider { display: none !important; }
-          .navbar-brand { font-size: 1.2rem !important; }
-        }
-      `}</style>
     </nav>
   );
 }

@@ -7,37 +7,39 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: { searchParams: any }) {
-  const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-  if (session?.user?.role === "SELLER") {
-    redirect("/dashboard");
-  }
-  const resolvedParams = await searchParams;
-  const search = resolvedParams?.search || "";
-  const categoryFilter = resolvedParams?.category || "";
+    if (session?.user?.role === "SELLER") {
+      redirect("/dashboard");
+    }
+    const resolvedParams = await searchParams;
+    const search = resolvedParams?.search || "";
+    const categoryFilter = resolvedParams?.category || "";
 
-  // Build where clause
-  const where: any = {};
-  if (search) {
-    where.title = { contains: search, mode: "insensitive" };
-  }
-  if (categoryFilter) {
-    where.category = { name: categoryFilter };
-  }
+    // Build where clause
+    const where: any = {};
+    if (search) {
+      where.title = { contains: search, mode: "insensitive" };
+    }
+    if (categoryFilter) {
+      where.category = { name: categoryFilter };
+    }
 
-  const books = await prisma.book.findMany({
-    where,
-    include: { 
-      category: true,
-      seller: { select: { name: true } },
-      reviews: { select: { rating: true } }
-    },
-    orderBy: { createdAt: "desc" },
-  });
+    const books = await prisma.book.findMany({
+      where,
+      include: { 
+        category: true,
+        seller: { select: { name: true } },
+        reviews: { select: { rating: true } }
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
+    const categories = await prisma.category.findMany({
+      orderBy: { name: "asc" },
+    });
+
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -225,5 +227,24 @@ export default async function Home({ searchParams }: { searchParams: any }) {
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error: any) {
+    console.error("Home Page Error:", error);
+    return (
+      <div style={{ padding: '4rem 2rem', textAlign: 'center', background: 'white', borderRadius: '32px', marginTop: '2rem', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>⚠️</div>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem' }}>Sistem Sedang Bermasalah</h2>
+        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>Terjadi kesalahan saat memuat halaman.</p>
+        <div style={{ 
+          background: '#fee2e2', color: '#b91c1c', padding: '1rem', 
+          borderRadius: '12px', fontSize: '0.85rem', marginBottom: '2rem',
+          maxWidth: '500px', margin: '0 auto 2rem', textAlign: 'left',
+          fontFamily: 'monospace', overflowX: 'auto'
+        }}>
+          Error: {error.message || "Unknown error"}
+        </div>
+        <Link href="/" className="btn-primary">Coba Muat Ulang</Link>
+      </div>
+    );
+  }
 }
