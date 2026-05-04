@@ -20,27 +20,27 @@ export async function GET(req: Request) {
     const user1Id = [session.user.id, targetId].sort()[0];
     const user2Id = [session.user.id, targetId].sort()[1];
 
+    const conversationInclude = {
+      messages: {
+        include: {
+          sender: { select: { name: true, image: true } },
+          book: { select: { title: true, imageUrl: true, price: true } }
+        },
+        orderBy: { createdAt: 'asc' as const }
+      }
+    };
+
     let conversation = await prisma.conversation.findUnique({
       where: {
         user1Id_user2Id: { user1Id, user2Id }
       },
-      include: {
-        messages: {
-          include: {
-            sender: { select: { name: true, image: true } },
-            book: { select: { title: true, imageUrl: true, price: true } }
-          },
-          orderBy: { createdAt: 'asc' }
-        }
-      }
+      include: conversationInclude
     });
 
     if (!conversation) {
       conversation = await prisma.conversation.create({
         data: { user1Id, user2Id },
-        include: {
-          messages: true
-        }
+        include: conversationInclude
       });
     }
 
