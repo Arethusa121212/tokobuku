@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   description: 'Beli buku online mudah dan cepat',
 };
 
-import StatusTracker from "@/components/StatusTracker";
-import ChatWidget from "@/components/ChatWidget";
 
 export default function RootLayout({
   children,
@@ -21,7 +19,6 @@ export default function RootLayout({
     <html lang="id">
       <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Providers>
-          <StatusTracker />
           <Navbar />
           <main className="container" style={{ flex: 1 }}>
             {children}
