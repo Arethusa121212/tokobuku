@@ -39,116 +39,184 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   });
 
   return (
-    <div style={{ padding: '2rem 0' }}>
-      {/* Hero Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, #00AA5B 0%, #008C4A 100%)',
-        color: 'white', padding: '4rem 2rem', borderRadius: '24px',
-        marginBottom: '3rem', textAlign: 'center',
-        boxShadow: '0 20px 60px rgba(0,170,91,0.15)'
+    <div style={{ paddingBottom: '4rem' }}>
+      {/* Premium Hero Section */}
+      <div className="hero-gradient" style={{
+        color: 'white', padding: '6rem 2rem', borderRadius: '0 0 40px 40px',
+        marginBottom: '3rem', textAlign: 'center', margin: '0 -1.5rem',
+        boxShadow: '0 10px 30px rgba(0,170,91,0.1)'
       }}>
-        <h1 style={{ fontSize: '2.8rem', fontWeight: 800, marginBottom: '1rem' }}>Temukan Buku Favoritmu</h1>
-        <p style={{ fontSize: '1.2rem', opacity: 0.9, marginBottom: '0' }}>Jelajahi koleksi buku terbaik dengan harga terjangkau</p>
+        <div className="container animate-fade-in">
+          <h1 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-1.5px', lineHeight: 1.1 }}>
+            Surga Buku <br/><span style={{ color: '#FFD700' }}>Para Kolektor</span>
+          </h1>
+          <p style={{ fontSize: '1.25rem', opacity: 0.9, marginBottom: '2.5rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
+            Jelajahi ribuan koleksi buku langka, populer, dan edukatif dari penjual terpercaya di seluruh Indonesia.
+          </p>
+          <div style={{ 
+            maxWidth: '600px', margin: '0 auto', background: 'white', 
+            padding: '0.5rem', borderRadius: '16px', display: 'flex',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.15)' 
+          }}>
+            <input 
+              type="text" 
+              placeholder="Cari judul buku atau penulis..." 
+              style={{ flex: 1, border: 'none', padding: '0 1.5rem', outline: 'none', color: '#333', fontSize: '1rem' }}
+            />
+            <button className="btn-primary" style={{ padding: '0.8rem 2rem' }}>Cari</button>
+          </div>
+        </div>
       </div>
 
-      {/* Category Filter */}
-      {categories.length > 0 && (
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', alignItems: 'center' }}>
-            <Link
-              href="/"
-              style={{
-                padding: '0.5rem 1.2rem', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 600,
-                textDecoration: 'none', transition: 'all 0.2s',
-                background: !categoryFilter ? 'var(--color-primary)' : 'var(--color-surface)',
-                color: !categoryFilter ? 'white' : 'var(--color-text-secondary)',
-                border: !categoryFilter ? 'none' : '1.5px solid var(--color-border)',
-              }}
-            >
-              Semua
-            </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
+      <div className="container">
+        {/* Category Highlights */}
+        <div style={{ marginBottom: '4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Kategori Populer</h2>
+            <Link href="/" style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.9rem' }}>Lihat Semua →</Link>
+          </div>
+          <div style={{ display: 'flex', gap: '1.2rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
+            {[
+              { name: 'Fiksi', icon: '🎨', color: '#FF6B6B' },
+              { name: 'Bisnis', icon: '📈', color: '#4D96FF' },
+              { name: 'Teknologi', icon: '💻', color: '#6BCB77' },
+              { name: 'Sejarah', icon: '🏺', color: '#FFD93D' },
+              { name: 'Anak', icon: '🧸', color: '#92A9BD' },
+              { name: 'Edukasi', icon: '🎓', color: '#B983FF' },
+            ].map((cat) => (
+              <Link 
+                key={cat.name}
                 href={`/?category=${cat.name}`}
                 style={{
-                  padding: '0.5rem 1.2rem', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 600,
-                  textDecoration: 'none', transition: 'all 0.2s',
-                  background: categoryFilter === cat.name ? 'var(--color-primary)' : 'var(--color-surface)',
-                  color: categoryFilter === cat.name ? 'white' : 'var(--color-text-secondary)',
-                  border: categoryFilter === cat.name ? 'none' : '1.5px solid var(--color-border)',
+                  minWidth: '100px', height: '120px', background: 'white',
+                  borderRadius: '24px', display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center', gap: '0.8rem',
+                  boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.borderColor = 'var(--color-border)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                 }}
               >
-                {cat.name}
+                <span style={{ fontSize: '2rem' }}>{cat.icon}</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#444' }}>{cat.name}</span>
               </Link>
             ))}
           </div>
         </div>
-      )}
 
-      {/* Search result info */}
-      {search && (
-        <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-          <p style={{ color: 'var(--color-text-secondary)' }}>
-            Hasil pencarian untuk: <strong style={{ color: 'var(--color-text-primary)' }}>&quot;{search}&quot;</strong> ({books.length} buku)
-          </p>
-          <Link href="/" style={{ color: 'var(--color-primary)', fontSize: '0.9rem', fontWeight: 600 }}>Reset</Link>
+        {/* Search result info */}
+        {search && (
+          <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--color-primary-light)', borderRadius: '16px', border: '1px dashed var(--color-primary)' }}>
+            <p style={{ color: 'var(--color-primary-hover)', fontWeight: 600 }}>
+              🔎 Menampilkan hasil untuk: &quot;{search}&quot; ({books.length} buku ditemukan)
+            </p>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
+          <div>
+            <h2 style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.5px' }}>
+              {categoryFilter ? `Koleksi ${categoryFilter}` : 'Jelajahi Buku'}
+            </h2>
+            <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>Pilihan terbaik untuk menemani waktu luangmu</p>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <select style={{ padding: '0.6rem 1rem', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'white', fontWeight: 600, outline: 'none' }}>
+              <option>Terbaru</option>
+              <option>Harga Terendah</option>
+              <option>Harga Tertinggi</option>
+              <option>Rating Tertinggi</option>
+            </select>
+          </div>
         </div>
-      )}
 
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '1.5rem' }}>
-        {categoryFilter ? `Kategori: ${categoryFilter}` : search ? 'Hasil Pencarian' : 'Buku Terbaru'}
-      </h2>
+        {books.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '6rem 2rem', background: 'white', borderRadius: '32px', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>📭</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Oops! Buku tidak ditemukan</h3>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>Coba gunakan kata kunci lain atau jelajahi kategori populer kami.</p>
+            <Link href="/" className="btn-primary">Kembali ke Beranda</Link>
+          </div>
+        ) : (
+          <div className="product-grid">
+            {books.map((book) => {
+              const avgRating = book.reviews.length > 0 
+                ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
+                : 0;
 
-      {books.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-secondary)', background: 'var(--color-surface)', borderRadius: '20px' }}>
-          <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</p>
-          <p style={{ fontSize: '1.1rem' }}>
-            {search ? 'Tidak ada buku yang cocok dengan pencarian Anda.' : 'Belum ada buku yang tersedia saat ini.'}
-          </p>
-        </div>
-      ) : (
-        <div className="product-grid">
-          {books.map((book) => {
-            const avgRating = book.reviews.length > 0 
-              ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
-              : 0;
-
-            return (
-              <Link href={`/books/${book.id}`} key={book.id} className="product-card">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover+Buku'} alt={book.title} className="product-image" />
-                <div className="product-info">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                    {book.category && (
-                      <span style={{
-                        fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-primary)',
-                        background: '#f0fdf4', padding: '0.15rem 0.5rem', borderRadius: '8px',
-                      }}>
-                        {book.category.name}
-                      </span>
+              return (
+                <Link href={`/books/${book.id}`} key={book.id} className="product-card animate-fade-in">
+                  <div className="product-image-container">
+                    <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover+Buku'} alt={book.title} className="product-image" />
+                    {book.stock <= 5 && book.stock > 0 && (
+                      <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#EF144A', color: 'white', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800 }}>
+                        STOK TERBATAS!
+                      </div>
                     )}
-                    {avgRating > 0 && (
-                      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                        ⭐ {avgRating.toFixed(1)}
-                      </span>
+                    {book.stock === 0 && (
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800 }}>
+                        HABIS terjual
+                      </div>
                     )}
                   </div>
-                  <h3 className="product-title" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>{book.title}</h3>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="product-price" style={{ fontSize: '1.1rem' }}>
-                      Rp {book.price.toLocaleString('id-ID')}
+                  <div className="product-info">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '0.2rem 0.6rem', borderRadius: '10px' }}>
+                        {book.category?.name || 'Umum'}
+                      </span>
+                      {avgRating > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.85rem', fontWeight: 800, color: '#f59e0b' }}>
+                          ⭐ {avgRating.toFixed(1)}
+                        </div>
+                      )}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: book.stock > 0 ? '#10b981' : '#ef4444', fontWeight: 600 }}>
-                      Stok: {book.stock}
+                    <h3 className="product-title" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.8rem', height: '2.8rem' }}>{book.title}</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--color-text-primary)' }}>
+                        Rp {book.price.toLocaleString('id-ID')}
+                      </div>
+                    </div>
+                    <div style={{ marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
+                      <span>👤 {book.seller?.name || 'Anonim'}</span>
                     </div>
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Newsletter Section */}
+        <div style={{
+          marginTop: '6rem', background: '#1a1a1a', borderRadius: '32px',
+          padding: '4rem 2rem', textAlign: 'center', color: 'white',
+          position: 'relative', overflow: 'hidden'
+        }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem' }}>Jangan Sampai Ketinggalan!</h2>
+            <p style={{ opacity: 0.8, marginBottom: '2.5rem', maxWidth: '500px', margin: '0 auto 2.5rem' }}>
+              Dapatkan info buku terbaru dan promo eksklusif langsung di email Anda setiap minggu.
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '450px', margin: '0 auto' }}>
+              <input 
+                type="email" 
+                placeholder="Alamat email Anda..." 
+                style={{ flex: 1, padding: '1rem 1.5rem', borderRadius: '12px', border: 'none', outline: 'none', fontSize: '1rem' }}
+              />
+              <button className="btn-primary" style={{ padding: '0 2rem' }}>Berlangganan</button>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

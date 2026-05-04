@@ -22,51 +22,69 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0' }}>
-        <Link href="/" className="navbar-brand" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-primary)' }}>
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0' }}>
+        <Link href="/" className="navbar-brand">
           Toko Buku
         </Link>
         
         {session?.user?.role !== "SELLER" && (
-          <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 2rem' }}>
+          <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 3rem', position: 'relative' }}>
             <input
               type="text"
-              placeholder="Cari buku apa hari ini?"
+              placeholder="Mau baca buku apa hari ini?..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+              style={{ 
+                width: '100%', padding: '0.8rem 1.5rem', borderRadius: '12px', 
+                border: '1.5px solid var(--color-border)', background: '#F8FAFC',
+                fontSize: '0.95rem', transition: 'all 0.2s', outline: 'none'
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-primary)';
+                e.currentTarget.style.background = 'white';
+                e.currentTarget.style.boxShadow = '0 0 0 4px var(--color-primary-light)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+                e.currentTarget.style.background = '#F8FAFC';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             />
+            <span style={{ position: 'absolute', right: '1.2rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>🔍</span>
           </form>
         )}
 
         <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
           {session?.user?.role !== "SELLER" && (
-            <Link href="/cart" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span style={{ fontSize: '1.2rem' }}>🛒</span> Keranjang
+            <Link href="/cart" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'relative' }}>
+              <span style={{ fontSize: '1.4rem' }}>🛒</span>
+              <span style={{ fontSize: '0.9rem' }}>Keranjang</span>
             </Link>
           )}
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ height: '24px', width: '1px', background: '#E2E8F0' }}></div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
             {session ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <Link href="/orders" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem' }}>
-                  📦 Pesanan
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+                <Link href="/orders" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'color 0.2s' }}>
+                  Pesanan
                 </Link>
 
-                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', padding: '0.4rem 0.8rem', borderRadius: '30px', border: '1.5px solid var(--color-border)', transition: 'all 0.2s' }}>
+                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', padding: '0.3rem', borderRadius: '40px', border: '1px solid var(--color-border)', background: 'white' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={session.user.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + session.user.email} 
                     alt="Profile" 
-                    style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} 
+                    style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} 
                   />
-                  <span style={{ color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.9rem' }}>
+                  <span style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem', paddingRight: '0.8rem' }}>
                     {session.user.name?.split(' ')[0]}
                   </span>
                 </Link>
 
                 {session.user.role === "SELLER" && (
-                  <Link href="/dashboard" style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>
+                  <Link href="/dashboard" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', boxShadow: 'none' }}>
                     Dashboard
                   </Link>
                 )}
@@ -77,23 +95,21 @@ export default function Navbar() {
                     toast.success("Berhasil keluar");
                   }} 
                   style={{ 
-                    padding: '0.5rem 1rem', color: '#ef4444', fontWeight: 600, 
-                    border: '1.5px solid #ef4444', borderRadius: '8px', 
-                    background: 'transparent', cursor: 'pointer', fontSize: '0.85rem' 
+                    color: '#ef4444', fontWeight: 700, fontSize: '0.85rem' 
                   }}
                 >
                   Keluar
                 </button>
               </div>
             ) : (
-              <>
-                <Link href="/login" style={{ padding: '0.5rem 1rem', color: 'var(--color-primary)', fontWeight: 600, border: '1.5px solid var(--color-primary)', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <Link href="/login" style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.9rem' }}>
                   Masuk
                 </Link>
-                <Link href="/register" className="btn-primary" style={{ padding: '0.6rem 1.2rem', background: 'var(--color-primary)', color: 'white', fontWeight: 600, borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
-                  Daftar
+                <Link href="/register" className="btn-primary" style={{ padding: '0.6rem 1.4rem', fontSize: '0.9rem' }}>
+                  Daftar Sekarang
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>

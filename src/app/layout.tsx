@@ -16,10 +16,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      </head>
       <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Providers>
           <Navbar />
-          <main className="container" style={{ padding: '2rem 0', flex: 1 }}>
+          <main className="container" style={{ flex: 1 }}>
             {children}
           </main>
           <Footer />
