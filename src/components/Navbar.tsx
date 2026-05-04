@@ -2,14 +2,48 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import ChatWidget from "./ChatWidget";
+import { pusherClient } from "@/lib/pusher-client";
+
 
 export default function Navbar() {
   const { data: session } = useSession();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch initial unread count
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/chat/rooms");
+        if (res.ok) {
+          const data = await res.json();
+          const total = data.unreadCounts.reduce((acc: number, c: any) => acc + c.count, 0);
+          setUnreadCount(total);
+        }
+      } catch (err) {
+        console.error("Failed to fetch unread count");
+      }
+    };
+
+    fetchUnread();
+
+    // Listen for real-time notifications
+    const channel = pusherClient.subscribe(`user-${session.user.id}`);
+    channel.bind("new-notification", () => {
+      setUnreadCount((prev) => prev + 1);
+    });
+
+    return () => {
+      pusherClient.unsubscribe(`user-${session.user.id}`);
+    };
+  }, [session?.user?.id]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +78,31 @@ export default function Navbar() {
         )}
 
         <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
+          {session && (
+            <div 
+              onClick={() => {
+                const event = new CustomEvent("openChat", { 
+                  detail: { sellerId: 'all', sellerName: 'Pesan' } 
+                });
+                window.dispatchEvent(event);
+              }}
+              style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+            >
+              <span style={{ fontSize: '1.3rem' }}>💬</span>
+              {unreadCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: '-5px', right: '-5px',
+                  background: '#EF144A', color: 'white', borderRadius: '50%',
+                  width: '18px', height: '18px', fontSize: '0.7rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, border: '2px solid white'
+                }}>
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+          )}
+
           {session?.user?.role !== "SELLER" && (
             <Link href="/cart" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <span style={{ fontSize: '1.3rem' }}>🛒</span>
@@ -96,7 +155,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      
+      <ChatWidget />
     </nav>
   );
 }

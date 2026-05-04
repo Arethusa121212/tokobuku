@@ -20,7 +20,7 @@ export default async function BookDetail({ params }: { params: any }) {
   const book = await prisma.book.findUnique({
     where: { id },
     include: { 
-      seller: { select: { name: true } },
+      seller: { select: { id: true, name: true } },
       category: true,
       reviews: { select: { rating: true } }
     }
@@ -102,6 +102,10 @@ export default async function BookDetail({ params }: { params: any }) {
                 price={book.price} 
                 stock={book.stock} 
                 isWishlistedInitial={isWishlisted} 
+                sellerId={book.sellerId}
+                sellerName={book.seller?.name || 'Penjual'}
+                bookTitle={book.title}
+                bookImage={book.imageUrl || ''}
               />
             ) : (
               <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem', textAlign: 'center' }}>

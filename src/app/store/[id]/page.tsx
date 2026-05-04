@@ -80,6 +80,10 @@ export default async function StorePage({ params }: { params: { id: string } }) 
                 }}>
                   Official Store
                 </span>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: store.isOnline ? '#22c55e' : '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: store.isOnline ? '#22c55e' : '#94a3b8', boxShadow: store.isOnline ? '0 0 8px rgba(34, 197, 94, 0.5)' : 'none' }}></div>
+                  {store.isOnline ? 'Sedang Aktif' : 'Offline'}
+                </div>
               </div>
               <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', marginBottom: '1.2rem', maxWidth: '600px' }}>
                 {store.storeDescription || "Selamat datang di toko kami! Kami menyediakan berbagai koleksi buku terbaik dengan pelayanan prima."}
@@ -92,26 +96,34 @@ export default async function StorePage({ params }: { params: { id: string } }) 
               </div>
             </div>
 
-            {/* Action */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {store.whatsapp && (
-                <a 
-                  href={`https://wa.me/${store.whatsapp.replace(/\D/g, '')}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                <button 
+                  onClick={() => {
+                    const event = new CustomEvent("openChat", { 
+                      detail: { sellerId: store.id, sellerName: store.name } 
+                    });
+                    window.dispatchEvent(event);
+                  }}
                   className="btn-primary" 
-                  style={{ padding: '1rem 2.5rem', borderRadius: '16px', fontSize: '1rem', background: '#25D366', borderColor: '#25D366', boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)', textDecoration: 'none', textAlign: 'center' }}
+                  style={{ padding: '1rem 2.5rem', borderRadius: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                 >
-                  💬 Chat WhatsApp
-                </a>
-              )}
-              <button style={{ 
-                padding: '0.8rem', borderRadius: '16px', border: '1px solid var(--color-border)',
-                fontWeight: 700, color: 'var(--color-text-primary)', background: 'white'
-              }}>
-                Bagikan Toko
-              </button>
-            </div>
+                  💬 Chat di Website
+                </button>
+                
+                {store.whatsapp && (
+                  <a 
+                    href={`https://wa.me/${store.whatsapp.replace(/\D/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ 
+                      padding: '0.8rem', borderRadius: '16px', border: '1.5px solid #25D366',
+                      fontWeight: 700, color: '#25D366', background: 'white', textDecoration: 'none', textAlign: 'center', fontSize: '0.9rem'
+                    }}
+                  >
+                    WhatsApp
+                  </a>
+                )}
+              </div>
           </div>
 
           <hr style={{ margin: '2.5rem 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />
