@@ -83,7 +83,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
             <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Kategori Populer</h2>
             <Link href="/" style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.9rem' }}>Lihat Semua →</Link>
           </div>
-          <div style={{ display: 'flex', gap: '1.2rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', padding: '0.5rem 0' }}>
             {[
               { name: 'Fiksi', icon: '📖' },
               { name: 'Bisnis', icon: '📈' },
