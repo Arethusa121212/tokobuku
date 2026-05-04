@@ -5,7 +5,6 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import ChatWidget from "./ChatWidget";
 import { pusherClient } from "@/lib/pusher-client";
 
 

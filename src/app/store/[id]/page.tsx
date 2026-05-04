@@ -97,7 +97,7 @@ export default async function StorePage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-              <StoreInteraction storeId={store.id} storeName={store.name} />
+              <StoreInteraction storeId={store.id} storeName={store.name || "Toko"} />
 
               
               {store.whatsapp && (
