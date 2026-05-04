@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import DeleteBookButton from "./DeleteBookButton";
+import EditBookButton from "./EditBookButton";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,10 @@ export default async function DashboardPage() {
   });
   const totalRevenue = orderItems.reduce((acc, i) => acc + i.price * i.quantity, 0);
   const totalOrders = new Set(orderItems.map(i => i.orderId)).size;
+
+  const categories = await prisma.category.findMany({
+    orderBy: { name: 'asc' }
+  });
 
   return (
     <div>
@@ -83,36 +88,39 @@ export default async function DashboardPage() {
             Anda belum menambahkan buku satupun.
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid var(--color-border)', textAlign: 'left' }}>
-                <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Judul Buku</th>
-                <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Kategori</th>
-                <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Harga</th>
-                <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Stok</th>
-                <th style={{ padding: '1rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {books.map((book) => (
-                <tr key={book.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '1rem', fontWeight: 500 }}>{book.title}</td>
-                  <td style={{ padding: '1rem' }}>
-                    {book.category ? (
-                      <span style={{ background: '#f0fdf4', color: 'var(--color-primary)', padding: '0.2rem 0.6rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 600 }}>
-                        {book.category.name}
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td style={{ padding: '1rem' }}>Rp {book.price.toLocaleString('id-ID')}</td>
-                  <td style={{ padding: '1rem' }}>{book.stock}</td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <DeleteBookButton bookId={book.id} />
-                  </td>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--color-border)', textAlign: 'left' }}>
+                  <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Judul Buku</th>
+                  <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Kategori</th>
+                  <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Harga</th>
+                  <th style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>Stok</th>
+                  <th style={{ padding: '1rem', color: 'var(--color-text-secondary)', textAlign: 'right' }}>Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {books.map((book) => (
+                  <tr key={book.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                    <td style={{ padding: '1rem', fontWeight: 500 }}>{book.title}</td>
+                    <td style={{ padding: '1rem' }}>
+                      {book.category ? (
+                        <span style={{ background: '#f0fdf4', color: 'var(--color-primary)', padding: '0.2rem 0.6rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 600 }}>
+                          {book.category.name}
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td style={{ padding: '1rem' }}>Rp {book.price.toLocaleString('id-ID')}</td>
+                    <td style={{ padding: '1rem' }}>{book.stock}</td>
+                    <td style={{ padding: '1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      <EditBookButton book={book} categories={categories} />
+                      <DeleteBookButton bookId={book.id} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
