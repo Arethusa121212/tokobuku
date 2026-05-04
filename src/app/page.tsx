@@ -133,19 +133,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               </div>
             </div>
 
-            <div className="sidebar-card" style={{ background: 'var(--color-primary)', color: 'white' }}>
-              <h3 className="sidebar-title" style={{ color: 'white' }}>📊 Statistik Toko</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{totalBooks}+</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Koleksi Buku</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>100%</div>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Penjual Terverifikasi</div>
-                </div>
-              </div>
-            </div>
+
           </aside>
 
           {/* MAIN CONTENT */}
