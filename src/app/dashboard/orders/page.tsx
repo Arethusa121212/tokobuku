@@ -55,7 +55,7 @@ export default async function DashboardOrdersPage() {
     switch (status) {
       case "PENDING": return { bg: '#fef3c7', color: '#b45309', label: '⏳ Menunggu Pembayaran' };
       case "PROCESSING": return { bg: '#dbeafe', color: '#1d4ed8', label: '📦 Perlu Verifikasi' };
-      case "SHIPPED": return { bg: '#e0e7ff', color: '#4338ca', label: '🚚 Dikirim' };
+      case "SHIPPED": return { bg: '#e0e7ff', color: '#4338ca', label: '🚚 Sedang Dikirim' };
       case "DELIVERED": return { bg: '#dcfce7', color: '#15803d', label: '✅ Selesai' };
       default: return { bg: '#f1f5f9', color: '#475569', label: status };
     }

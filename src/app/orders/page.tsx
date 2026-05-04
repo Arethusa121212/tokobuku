@@ -40,7 +40,7 @@ export default async function OrdersPage() {
       case "PROCESSING":
         return { bg: '#dbeafe', color: '#1d4ed8', label: '📦 Sedang Diverifikasi' };
       case "SHIPPED":
-        return { bg: '#e0e7ff', color: '#4338ca', label: '🚚 Dikirim' };
+        return { bg: '#e0e7ff', color: '#4338ca', label: '🚚 Sedang Dikirim' };
       case "DELIVERED":
         return { bg: '#dcfce7', color: '#15803d', label: '✅ Selesai' };
       case "CANCELLED":
