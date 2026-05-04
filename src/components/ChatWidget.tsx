@@ -97,7 +97,7 @@ export default function ChatWidget() {
     }
   };
 
-  if (!session) return null;
+  if (!session || session.user.role === "SELLER") return null;
 
   return (
     <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 1000, fontFamily: 'var(--font-outfit)' }}>

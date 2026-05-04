@@ -86,7 +86,7 @@ export default function Navbar() {
         )}
 
         <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
-          {session && (
+          {session && session.user.role !== "SELLER" && (
             <div 
               onClick={() => {
                 const event = new CustomEvent("openChat", { 
