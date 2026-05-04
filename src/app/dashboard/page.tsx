@@ -52,7 +52,7 @@ export default async function DashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Dashboard Penjual</h1>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/dashboard/chat" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid #3b82f6', color: '#3b82f6', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+          <Link href="/messages" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid #3b82f6', color: '#3b82f6', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
             💬 Pesan Masuk
           </Link>
           <Link href="/dashboard/settings" style={{ padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1.5px solid var(--color-text-secondary)', color: 'var(--color-text-secondary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>

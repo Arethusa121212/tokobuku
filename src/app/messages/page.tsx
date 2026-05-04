@@ -13,7 +13,7 @@ interface Conversation {
   messages: any[];
 }
 
-export default function SellerChatDashboard() {
+export default function MessagesPage() {
   const { data: session } = useSession();
   const [conversations, setConversations] = useState<any[]>([]);
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
@@ -24,9 +24,10 @@ export default function SellerChatDashboard() {
 
   useEffect(() => {
     fetchRooms();
-  }, []);
+  }, [session?.user?.id]);
 
   const fetchRooms = async () => {
+    if (!session?.user?.id) return;
     try {
       const res = await fetch("/api/chat/rooms");
       if (res.ok) {
@@ -110,7 +111,7 @@ export default function SellerChatDashboard() {
     }
   };
 
-  if (session?.user?.role !== "SELLER") return <div>Akses Ditolak</div>;
+  if (!session) return <div style={{ textAlign: 'center', padding: '4rem' }}>Silakan login untuk melihat pesan.</div>;
 
   return (
     <div style={{ height: 'calc(100vh - 150px)', display: 'flex', gap: '1.5rem', marginTop: '1rem' }}>

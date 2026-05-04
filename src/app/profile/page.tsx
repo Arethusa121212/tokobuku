@@ -238,11 +238,22 @@ export default function ProfilePage() {
 
       {/* Conditional Section: Wishlist for Customer, Sales History for Seller */}
       <div style={{ padding: '2.5rem', background: 'var(--color-surface)', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {isSeller ? (
-            <><span style={{ color: 'var(--color-primary)' }}>💹</span> Penjualan Berhasil</>
-          ) : (
-            <><span>❤️</span> Wishlist Saya</>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {isSeller ? (
+              <><span style={{ color: 'var(--color-primary)' }}>💹</span> Penjualan Berhasil</>
+            ) : (
+              <><span>❤️</span> Wishlist Saya</>
+            )}
+          </div>
+          {!isSeller && (
+            <Link href="/messages" style={{ 
+              fontSize: '0.85rem', color: 'var(--color-primary)', 
+              textDecoration: 'none', background: 'var(--color-primary-light)',
+              padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: 700
+            }}>
+              💬 Daftar Pesan
+            </Link>
           )}
         </h2>
 
