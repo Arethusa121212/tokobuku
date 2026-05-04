@@ -57,7 +57,6 @@ export default function Navbar() {
   };
 
   return (
-  return (
     <nav className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
       <div className="container" style={{ 
         display: 'flex', 
