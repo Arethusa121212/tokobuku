@@ -159,7 +159,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                     )}
                   </div>
                   <div className="product-info">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '0.2rem 0.6rem', borderRadius: '10px' }}>
                         {book.category?.name || 'Umum'}
                       </span>
@@ -169,14 +169,16 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                         </div>
                       )}
                     </div>
-                    <h3 className="product-title" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.8rem', height: '2.8rem' }}>{book.title}</h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--color-text-primary)' }}>
+                    
+                    <h3 className="product-title">{book.title}</h3>
+                    
+                    <div style={{ marginTop: 'auto' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-text-primary)', marginBottom: '0.4rem' }}>
                         Rp {book.price.toLocaleString('id-ID')}
                       </div>
-                    </div>
-                    <div style={{ marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
-                      <span>👤 {book.seller?.name || 'Anonim'}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
+                        <span>👤 {book.seller?.name || 'Anonim'}</span>
+                      </div>
                     </div>
                   </div>
                 </Link>
