@@ -5,9 +5,10 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || session.user.role !== "SELLER") {
@@ -18,7 +19,7 @@ export async function PATCH(
 
     // Verify ownership
     const book = await prisma.book.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!book || book.sellerId !== session.user.id) {
@@ -26,7 +27,7 @@ export async function PATCH(
     }
 
     const updatedBook = await prisma.book.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: title || undefined,
         price: price ? Number(price) : undefined,
