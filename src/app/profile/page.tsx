@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
   const [wishlist, setWishlist] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -20,6 +21,7 @@ export default function ProfilePage() {
     if (session?.user) {
       setName(session.user.name || "");
       setImage(session.user.image || "");
+      setBankAccount((session.user as any).bankAccount || "");
       fetchWishlist();
     }
   }, [session]);
@@ -99,14 +101,14 @@ export default function ProfilePage() {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, image }),
+        body: JSON.stringify({ name, image, bankAccount }),
       });
 
       const data = await res.json();
       if (res.ok) {
         toast.success("Profil berhasil diperbarui!");
         // Update session client-side
-        await update({ name, image });
+        await update({ name, image, bankAccount });
         router.refresh();
       } else {
         toast.error(data.message || "Gagal memperbarui profil");
@@ -117,6 +119,8 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
+
+  const isSeller = session.user.role === "SELLER";
 
   return (
     <div style={{ maxWidth: '1000px', margin: '4rem auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', padding: '0 1rem' }}>
@@ -149,7 +153,7 @@ export default function ProfilePage() {
           <div style={{ display: 'grid', gap: '1.2rem' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.9rem' }}>
-                {session.user.role === "SELLER" ? "Nama Toko" : "Nama Lengkap"}
+                {isSeller ? "Nama Toko" : "Nama Lengkap"}
               </label>
               <input 
                 type="text" 
@@ -163,6 +167,19 @@ export default function ProfilePage() {
               <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.9rem' }}>Email</label>
               <input type="email" value={session.user.email || ""} disabled style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1.5px solid var(--color-border)', fontSize: '0.95rem', background: '#f8fafc', color: '#64748b' }} />
             </div>
+
+            {isSeller && (
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.9rem' }}>Info Rekening (Bank & No. Rek)</label>
+                <input 
+                  type="text" 
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)}
+                  placeholder="Contoh: BCA 1234567890 a/n Toko Anda"
+                  style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1.5px solid var(--color-border)', fontSize: '0.95rem' }}
+                />
+              </div>
+            )}
           </div>
 
           <button type="submit" disabled={loading || uploading} className="btn-primary" style={{ padding: '0.9rem', fontSize: '1rem', fontWeight: 700 }}>

@@ -11,6 +11,7 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ export default function Register() {
     setName("");
     setEmail("");
     setPassword("");
+    setBankAccount("");
     setError("");
   };
 
@@ -49,6 +51,10 @@ export default function Register() {
       setError("Password harus mengandung minimal 1 huruf besar");
       return;
     }
+    if (role === "SELLER" && !bankAccount.trim()) {
+      setError("Nomor rekening wajib diisi untuk Penjual");
+      return;
+    }
 
     setLoading(true);
 
@@ -56,7 +62,7 @@ export default function Register() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role, bankAccount }),
       });
 
       if (res.ok) {
@@ -275,6 +281,23 @@ export default function Register() {
             </div>
           )}
         </div>
+
+        {isSeller && (
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Info Rekening (Bank & No. Rek)</label>
+            <input
+              type="text"
+              value={bankAccount}
+              onChange={(e) => setBankAccount(e.target.value)}
+              required
+              placeholder="Contoh: BCA 1234567890 a/n Toko Anda"
+              style={inputStyle}
+            />
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
+              Digunakan agar pembeli tahu kemana harus mentransfer pembayaran.
+            </p>
+          </div>
+        )}
 
         <button
           type="submit"

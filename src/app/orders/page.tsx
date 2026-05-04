@@ -23,7 +23,11 @@ export default async function OrdersPage() {
     where: { userId: session.user.id },
     include: {
       items: {
-        include: { book: true },
+        include: { 
+          book: {
+            include: { seller: { select: { name: true, bankAccount: true } } }
+          }
+        },
       },
     },
     orderBy: { createdAt: "desc" },
@@ -60,6 +64,10 @@ export default async function OrdersPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {orders.map((order) => {
             const statusInfo = getStatusStyle(order.status);
+            
+            // Collect unique sellers for this order
+            const sellers = Array.from(new Set(order.items.map(i => i.book.seller)));
+
             return (
               <div key={order.id} style={{ background: 'var(--color-surface)', borderRadius: '20px', overflow: 'hidden', border: '1.5px solid var(--color-border)' }}>
                 {/* Order Header */}
@@ -86,7 +94,10 @@ export default async function OrdersPage() {
                       <img src={item.book.imageUrl || 'https://via.placeholder.com/50x65'} alt={item.book.title} style={{ width: '50px', height: '65px', borderRadius: '8px', objectFit: 'cover' }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{item.book.title}</div>
-                        <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>{item.quantity}x @ Rp {item.price.toLocaleString('id-ID')}</div>
+                        <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
+                          {item.quantity}x @ Rp {item.price.toLocaleString('id-ID')} 
+                          <span style={{ marginLeft: '0.5rem', fontStyle: 'italic', fontSize: '0.8rem' }}>(Penjual: {item.book.seller.name})</span>
+                        </div>
                       </div>
                       <div style={{ fontWeight: 700 }}>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</div>
                     </div>
@@ -95,13 +106,24 @@ export default async function OrdersPage() {
                   <div style={{ borderTop: '1.5px solid var(--color-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <div style={{ flex: 1 }}>
                       {order.address && (
-                        <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
-                          📍 {order.address}
+                        <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
+                          📍 Alamat: {order.address}
                         </div>
                       )}
                       
                       {order.status === "PENDING" && (
-                        <PaymentUpload orderId={order.id} />
+                        <div style={{ marginBottom: '1.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+                          <p style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>💳 Instruksi Pembayaran:</p>
+                          {sellers.map((seller: any, idx) => (
+                            <div key={idx} style={{ fontSize: '0.85rem', marginBottom: '0.4rem', color: 'var(--color-text-secondary)' }}>
+                              Transfer ke <strong>{seller.name}</strong>: <br/>
+                              <span style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '1rem' }}>
+                                {seller.bankAccount || "Rekening belum diatur"}
+                              </span>
+                            </div>
+                          ))}
+                          <PaymentUpload orderId={order.id} />
+                        </div>
                       )}
 
                       {order.paymentProof && (

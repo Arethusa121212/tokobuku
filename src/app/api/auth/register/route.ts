@@ -4,11 +4,18 @@ import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password, role } = await req.json();
+    const { name, email, password, role, bankAccount } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
         { message: "Semua field wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    if (role === "SELLER" && !bankAccount) {
+      return NextResponse.json(
+        { message: "Nomor rekening wajib diisi untuk Penjual" },
         { status: 400 }
       );
     }
@@ -54,6 +61,7 @@ export async function POST(req: Request) {
         email,
         password: hashedPassword,
         role: role || "CUSTOMER",
+        bankAccount,
       },
     });
 
