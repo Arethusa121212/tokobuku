@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import StoreInteraction from "@/components/StoreInteraction";
 
 export const dynamic = "force-dynamic";
 
@@ -96,34 +97,24 @@ export default async function StorePage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                <button 
-                  onClick={() => {
-                    const event = new CustomEvent("openChat", { 
-                      detail: { sellerId: store.id, sellerName: store.name } 
-                    });
-                    window.dispatchEvent(event);
+              <StoreInteraction storeId={store.id} storeName={store.name} />
+
+              
+              {store.whatsapp && (
+                <a 
+                  href={`https://wa.me/${store.whatsapp.replace(/\D/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ 
+                    padding: '0.8rem', borderRadius: '16px', border: '1.5px solid #25D366',
+                    fontWeight: 700, color: '#25D366', background: 'white', textDecoration: 'none', textAlign: 'center', fontSize: '0.9rem'
                   }}
-                  className="btn-primary" 
-                  style={{ padding: '1rem 2.5rem', borderRadius: '16px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                 >
-                  💬 Chat di Website
-                </button>
-                
-                {store.whatsapp && (
-                  <a 
-                    href={`https://wa.me/${store.whatsapp.replace(/\D/g, '')}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{ 
-                      padding: '0.8rem', borderRadius: '16px', border: '1.5px solid #25D366',
-                      fontWeight: 700, color: '#25D366', background: 'white', textDecoration: 'none', textAlign: 'center', fontSize: '0.9rem'
-                    }}
-                  >
-                    WhatsApp
-                  </a>
-                )}
-              </div>
+                  WhatsApp
+                </a>
+              )}
+          </div>
+
           </div>
 
           <hr style={{ margin: '2.5rem 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />

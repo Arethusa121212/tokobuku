@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { pusherClient } from "@/lib/pusher-client";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -15,6 +16,8 @@ interface Conversation {
 
 export default function MessagesPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const targetUserId = searchParams.get("userId");
   const [conversations, setConversations] = useState<any[]>([]);
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -25,6 +28,15 @@ export default function MessagesPage() {
   useEffect(() => {
     fetchRooms();
   }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (conversations.length > 0 && targetUserId) {
+      const room = conversations.find(c => c.user1Id === targetUserId || c.user2Id === targetUserId);
+      if (room) {
+        selectRoom(room);
+      }
+    }
+  }, [conversations, targetUserId]);
 
   const fetchRooms = async () => {
     if (!session?.user?.id) return;
@@ -39,6 +51,7 @@ export default function MessagesPage() {
       toast.error("Gagal memuat pesan");
     }
   };
+
 
   const selectRoom = async (room: any) => {
     setActiveRoom(room.id);

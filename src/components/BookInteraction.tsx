@@ -42,14 +42,9 @@ export default function BookInteraction({
       router.push("/login");
       return;
     }
-    const event = new CustomEvent("openChat", { 
-      detail: { 
-        sellerId, 
-        sellerName,
-        book: { id: bookId, title: bookTitle, imageUrl: bookImage, price }
-      } 
-    });
-    window.dispatchEvent(event);
+    
+    // Redirect to messages with params to initiate chat
+    router.push(`/messages?userId=${sellerId}&bookId=${bookId}`);
   };
 
   const toggleWishlist = async () => {
