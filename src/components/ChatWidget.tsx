@@ -56,7 +56,7 @@ export default function ChatWidget() {
 
   // Subscribe to room
   useEffect(() => {
-    if (!activeRoom) return;
+    if (!activeRoom || !pusherClient) return;
 
     const channel = pusherClient.subscribe(activeRoom);
     channel.bind("new-message", (newMessage: Message) => {

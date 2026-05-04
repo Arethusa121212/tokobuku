@@ -35,14 +35,16 @@ export default function Navbar() {
     fetchUnread();
 
     // Listen for real-time notifications
-    const channel = pusherClient.subscribe(`user-${session.user.id}`);
-    channel.bind("new-notification", () => {
-      setUnreadCount((prev) => prev + 1);
-    });
+    if (pusherClient) {
+      const channel = pusherClient.subscribe(`user-${session.user.id}`);
+      channel.bind("new-notification", () => {
+        setUnreadCount((prev) => prev + 1);
+      });
 
-    return () => {
-      pusherClient.unsubscribe(`user-${session.user.id}`);
-    };
+      return () => {
+        pusherClient.unsubscribe(`user-${session.user.id}`);
+      };
+    }
   }, [session?.user?.id]);
 
   const handleSearch = (e: React.FormEvent) => {
