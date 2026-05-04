@@ -11,7 +11,9 @@ export default function ProfilePage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
-  const [bankAccount, setBankAccount] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountHolder, setAccountHolder] = useState("");
   const [wishlist, setWishlist] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -19,9 +21,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (session?.user) {
-      setName(session.user.name || "");
-      setImage(session.user.image || "");
-      setBankAccount((session.user as any).bankAccount || "");
+      const u = session.user as any;
+      setName(u.name || "");
+      setImage(u.image || "");
+      setBankName(u.bankName || "");
+      setAccountNumber(u.accountNumber || "");
+      setAccountHolder(u.accountHolder || "");
       fetchWishlist();
     }
   }, [session]);
@@ -101,14 +106,14 @@ export default function ProfilePage() {
       const res = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, image, bankAccount }),
+        body: JSON.stringify({ name, image, bankName, accountNumber, accountHolder }),
       });
 
       const data = await res.json();
       if (res.ok) {
         toast.success("Profil berhasil diperbarui!");
         // Update session client-side
-        await update({ name, image, bankAccount });
+        await update({ name, image, bankName, accountNumber, accountHolder });
         router.refresh();
       } else {
         toast.error(data.message || "Gagal memperbarui profil");
@@ -169,15 +174,38 @@ export default function ProfilePage() {
             </div>
 
             {isSeller && (
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 600, fontSize: '0.9rem' }}>Info Rekening (Bank & No. Rek)</label>
-                <input 
-                  type="text" 
-                  value={bankAccount}
-                  onChange={(e) => setBankAccount(e.target.value)}
-                  placeholder="Contoh: BCA 1234567890 a/n Toko Anda"
-                  style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1.5px solid var(--color-border)', fontSize: '0.95rem' }}
-                />
+              <div style={{ display: 'grid', gap: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--color-border)', marginTop: '0.5rem' }}>
+                <p style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--color-primary)' }}>💳 Informasi Rekening</p>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}>Nama Bank</label>
+                  <input 
+                    type="text" 
+                    value={bankName}
+                    onChange={(e) => setBankName(e.target.value)}
+                    placeholder="BCA, Mandiri, dll"
+                    style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1.5px solid var(--color-border)', fontSize: '0.9rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}>Nomor Rekening</label>
+                  <input 
+                    type="text" 
+                    value={accountNumber}
+                    onChange={(e) => setAccountNumber(e.target.value)}
+                    placeholder="1234567890"
+                    style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1.5px solid var(--color-border)', fontSize: '0.9rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}>Atas Nama</label>
+                  <input 
+                    type="text" 
+                    value={accountHolder}
+                    onChange={(e) => setAccountHolder(e.target.value)}
+                    placeholder="Nama sesuai buku tabungan"
+                    style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1.5px solid var(--color-border)', fontSize: '0.9rem' }}
+                  />
+                </div>
               </div>
             )}
           </div>

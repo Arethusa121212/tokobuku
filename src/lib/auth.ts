@@ -42,7 +42,9 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
-          bankAccount: user.bankAccount,
+          bankName: user.bankName,
+          accountNumber: user.accountNumber,
+          accountHolder: user.accountHolder,
         };
       }
     })
@@ -53,12 +55,16 @@ export const authOptions: NextAuthOptions = {
         const u = user as any;
         token.role = u.role;
         token.id = u.id;
-        token.bankAccount = u.bankAccount;
+        token.bankName = u.bankName;
+        token.accountNumber = u.accountNumber;
+        token.accountHolder = u.accountHolder;
       }
       if (trigger === "update" && session) {
         token.name = session.name;
         token.image = session.image;
-        token.bankAccount = session.bankAccount;
+        token.bankName = session.bankName;
+        token.accountNumber = session.accountNumber;
+        token.accountHolder = session.accountHolder;
       }
       return token;
     },
@@ -66,7 +72,10 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
-        (session.user as any).bankAccount = token.bankAccount as string;
+        const u = session.user as any;
+        u.bankName = token.bankName as string;
+        u.accountNumber = token.accountNumber as string;
+        u.accountHolder = token.accountHolder as string;
       }
       return session;
     }

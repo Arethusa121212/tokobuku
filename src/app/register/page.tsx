@@ -11,7 +11,9 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [bankAccount, setBankAccount] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountHolder, setAccountHolder] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,9 @@ export default function Register() {
     setName("");
     setEmail("");
     setPassword("");
-    setBankAccount("");
+    setBankName("");
+    setAccountNumber("");
+    setAccountHolder("");
     setError("");
   };
 
@@ -51,8 +55,8 @@ export default function Register() {
       setError("Password harus mengandung minimal 1 huruf besar");
       return;
     }
-    if (role === "SELLER" && !bankAccount.trim()) {
-      setError("Nomor rekening wajib diisi untuk Penjual");
+    if (role === "SELLER" && (!bankName.trim() || !accountNumber.trim() || !accountHolder.trim())) {
+      setError("Semua informasi rekening wajib diisi untuk Penjual");
       return;
     }
 
@@ -62,7 +66,7 @@ export default function Register() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role, bankAccount }),
+        body: JSON.stringify({ name, email, password, role, bankName, accountNumber, accountHolder }),
       });
 
       if (res.ok) {
@@ -283,19 +287,41 @@ export default function Register() {
         </div>
 
         {isSeller && (
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Info Rekening (Bank & No. Rek)</label>
-            <input
-              type="text"
-              value={bankAccount}
-              onChange={(e) => setBankAccount(e.target.value)}
-              required
-              placeholder="Contoh: BCA 1234567890 a/n Toko Anda"
-              style={inputStyle}
-            />
-            <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
-              Digunakan agar pembeli tahu kemana harus mentransfer pembayaran.
-            </p>
+          <div style={{ display: 'grid', gap: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+            <p style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--color-primary)' }}>💳 Informasi Rekening</p>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}>Nama Bank</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                required
+                placeholder="Contoh: BCA, Mandiri, BNI"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}>Nomor Rekening</label>
+              <input
+                type="text"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                required
+                placeholder="Contoh: 1234567890"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}>Atas Nama</label>
+              <input
+                type="text"
+                value={accountHolder}
+                onChange={(e) => setAccountHolder(e.target.value)}
+                required
+                placeholder="Contoh: Nama Anda Sesuai Buku Tabungan"
+                style={inputStyle}
+              />
+            </div>
           </div>
         )}
 

@@ -25,7 +25,7 @@ export default async function OrdersPage() {
       items: {
         include: { 
           book: {
-            include: { seller: { select: { name: true, bankAccount: true } } }
+            include: { seller: { select: { name: true, bankName: true, accountNumber: true, accountHolder: true } } }
           }
         },
       },
@@ -66,7 +66,9 @@ export default async function OrdersPage() {
             const statusInfo = getStatusStyle(order.status);
             
             // Collect unique sellers for this order
-            const sellers = Array.from(new Set(order.items.map(i => i.book.seller)));
+            const sellersMap = new Map();
+            order.items.forEach(i => sellersMap.set(i.book.seller.name, i.book.seller));
+            const sellers = Array.from(sellersMap.values());
 
             return (
               <div key={order.id} style={{ background: 'var(--color-surface)', borderRadius: '20px', overflow: 'hidden', border: '1.5px solid var(--color-border)' }}>
@@ -112,14 +114,24 @@ export default async function OrdersPage() {
                       )}
                       
                       {order.status === "PENDING" && (
-                        <div style={{ marginBottom: '1.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
-                          <p style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--color-text-primary)' }}>💳 Instruksi Pembayaran:</p>
+                        <div style={{ marginBottom: '1.5rem', padding: '1.2rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                          <p style={{ fontWeight: 800, fontSize: '0.95rem', marginBottom: '0.8rem', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span>💳</span> Instruksi Pembayaran:
+                          </p>
                           {sellers.map((seller: any, idx) => (
-                            <div key={idx} style={{ fontSize: '0.85rem', marginBottom: '0.4rem', color: 'var(--color-text-secondary)' }}>
-                              Transfer ke <strong>{seller.name}</strong>: <br/>
-                              <span style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '1rem' }}>
-                                {seller.bankAccount || "Rekening belum diatur"}
-                              </span>
+                            <div key={idx} style={{ 
+                              padding: '1rem', background: 'white', borderRadius: '10px', 
+                              border: '1px solid #f1f5f9', marginBottom: idx === sellers.length - 1 ? '1rem' : '0.8rem' 
+                            }}>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '0.3rem' }}>Transfer ke Penjual: <strong>{seller.name}</strong></div>
+                              <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.2rem', fontSize: '0.85rem' }}>
+                                <span style={{ color: '#64748b' }}>Bank:</span>
+                                <span style={{ fontWeight: 700 }}>{seller.bankName || "-"}</span>
+                                <span style={{ color: '#64748b' }}>No. Rek:</span>
+                                <span style={{ fontWeight: 800, color: 'var(--color-primary)', fontSize: '1.05rem' }}>{seller.accountNumber || "-"}</span>
+                                <span style={{ color: '#64748b' }}>A/N:</span>
+                                <span style={{ fontWeight: 700 }}>{seller.accountHolder || "-"}</span>
+                              </div>
                             </div>
                           ))}
                           <PaymentUpload orderId={order.id} />
