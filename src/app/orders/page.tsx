@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import PaymentUpload from "@/components/PaymentUpload";
 
 export const dynamic = "force-dynamic";
 
@@ -31,9 +32,9 @@ export default async function OrdersPage() {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "PENDING":
-        return { bg: '#fef3c7', color: '#b45309', label: '⏳ Menunggu' };
+        return { bg: '#fef3c7', color: '#b45309', label: '⏳ Menunggu Pembayaran' };
       case "PROCESSING":
-        return { bg: '#dbeafe', color: '#1d4ed8', label: '📦 Diproses' };
+        return { bg: '#dbeafe', color: '#1d4ed8', label: '📦 Sedang Diverifikasi' };
       case "SHIPPED":
         return { bg: '#e0e7ff', color: '#4338ca', label: '🚚 Dikirim' };
       case "DELIVERED":
@@ -91,13 +92,26 @@ export default async function OrdersPage() {
                     </div>
                   ))}
 
-                  <div style={{ borderTop: '1.5px solid var(--color-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {order.address && (
-                      <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-                        📍 {order.address}
-                      </div>
-                    )}
-                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-primary)', marginLeft: 'auto' }}>
+                  <div style={{ borderTop: '1.5px solid var(--color-border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div style={{ flex: 1 }}>
+                      {order.address && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+                          📍 {order.address}
+                        </div>
+                      )}
+                      
+                      {order.status === "PENDING" && (
+                        <PaymentUpload orderId={order.id} />
+                      )}
+
+                      {order.paymentProof && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--color-primary)', fontWeight: 600 }}>
+                          ✅ Bukti bayar sudah diunggah
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-primary)' }}>
                       Total: Rp {order.totalAmount.toLocaleString('id-ID')}
                     </div>
                   </div>

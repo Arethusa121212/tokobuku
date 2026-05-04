@@ -130,17 +130,19 @@ model Review {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  totalAmount Int
-  status      String      @default("PENDING")
-  address     String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           String      @id @default(cuid())
+  totalAmount  Int
+  status       String      @default("PENDING")
+  address      String?
+  paymentProof String?
+  paymentMethod String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  userId      String
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  items       OrderItem[]
+  items        OrderItem[]
 }
 
 model OrderItem {

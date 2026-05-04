@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import OrderStatusActions from "@/components/OrderStatusActions";
 
 export const dynamic = "force-dynamic";
 
@@ -52,8 +53,8 @@ export default async function DashboardOrdersPage() {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "PENDING": return { bg: '#fef3c7', color: '#b45309', label: '⏳ Menunggu' };
-      case "PROCESSING": return { bg: '#dbeafe', color: '#1d4ed8', label: '📦 Diproses' };
+      case "PENDING": return { bg: '#fef3c7', color: '#b45309', label: '⏳ Menunggu Pembayaran' };
+      case "PROCESSING": return { bg: '#dbeafe', color: '#1d4ed8', label: '📦 Perlu Verifikasi' };
       case "SHIPPED": return { bg: '#e0e7ff', color: '#4338ca', label: '🚚 Dikirim' };
       case "DELIVERED": return { bg: '#dcfce7', color: '#15803d', label: '✅ Selesai' };
       default: return { bg: '#f1f5f9', color: '#475569', label: status };
@@ -90,15 +91,34 @@ export default async function DashboardOrdersPage() {
                     {statusInfo.label}
                   </span>
                 </div>
-                <div style={{ padding: '1.5rem' }}>
-                  {order.sellerItems.map((item: any) => (
-                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
-                      <span>{item.book.title} x{item.quantity}</span>
-                      <span style={{ fontWeight: 600 }}>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</span>
+                <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 200px', gap: '2rem' }}>
+                  <div>
+                    {order.sellerItems.map((item: any) => (
+                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
+                        <span>{item.book.title} x{item.quantity}</span>
+                        <span style={{ fontWeight: 600 }}>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</span>
+                      </div>
+                    ))}
+                    <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.8rem', textAlign: 'right', fontWeight: 800, color: 'var(--color-primary)' }}>
+                      Total Pendapatan: Rp {sellerTotal.toLocaleString('id-ID')}
                     </div>
-                  ))}
-                  <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.8rem', textAlign: 'right', fontWeight: 800, color: 'var(--color-primary)' }}>
-                    Pendapatan: Rp {sellerTotal.toLocaleString('id-ID')}
+                    
+                    <OrderStatusActions orderId={order.id} currentStatus={order.status} />
+                  </div>
+
+                  {/* Payment Proof Column */}
+                  <div style={{ textAlign: 'center', borderLeft: '1px solid var(--color-border)', paddingLeft: '1.5rem' }}>
+                    <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>BUKTI BAYAR</p>
+                    {order.paymentProof ? (
+                      <a href={order.paymentProof} target="_blank" rel="noopener noreferrer">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={order.paymentProof} alt="Bukti Bayar" style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--color-border)', cursor: 'zoom-in' }} />
+                      </a>
+                    ) : (
+                      <div style={{ padding: '2rem 1rem', background: '#f9fafb', borderRadius: '8px', color: '#9ca3af', fontSize: '0.8rem' }}>
+                        Belum ada bukti
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
