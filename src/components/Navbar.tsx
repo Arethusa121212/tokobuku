@@ -57,29 +57,36 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar">
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0' }}>
-        <Link href="/" className="navbar-brand" style={{ fontSize: '1.4rem' }}>
+  return (
+    <nav className="navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+      <div className="container" style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        height: '80px', // Fixed height for better control
+        padding: '0 1.5rem' 
+      }}>
+        <Link href="/" className="navbar-brand" style={{ fontSize: '1.6rem', marginBottom: '0' }}>
           Toko Buku
         </Link>
         
         {session?.user?.role !== "SELLER" && (
-          <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 3rem', position: 'relative' }}>
+          <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 3rem', display: 'flex', alignItems: 'center' }}>
             <input
               type="text"
               placeholder="Cari buku..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{ 
-                width: '100%', padding: '0.7rem 1.2rem', borderRadius: '12px', 
+                width: '100%', padding: '0.75rem 1.2rem', borderRadius: '14px', 
                 border: '1.5px solid var(--color-border)', background: '#F8FAFC',
-                fontSize: '0.9rem', outline: 'none'
+                fontSize: '0.9rem', outline: 'none', transition: 'border-color 0.2s'
               }}
             />
           </form>
         )}
 
-        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
+        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
           {session && (
             <div 
               onClick={() => {
@@ -88,16 +95,25 @@ export default function Navbar() {
                 });
                 window.dispatchEvent(event);
               }}
-              style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+              style={{ 
+                position: 'relative', 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                padding: '0.5rem',
+                borderRadius: '12px',
+                transition: 'background 0.2s'
+              }}
+              className="nav-icon-btn"
             >
-              <span style={{ fontSize: '1.3rem' }}>💬</span>
+              <span style={{ fontSize: '1.5rem' }}>💬</span>
               {unreadCount > 0 && (
                 <span style={{
-                  position: 'absolute', top: '-5px', right: '-5px',
+                  position: 'absolute', top: '0', right: '0',
                   background: '#EF144A', color: 'white', borderRadius: '50%',
-                  width: '18px', height: '18px', fontSize: '0.7rem',
+                  width: '20px', height: '20px', fontSize: '0.7rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 800, border: '2px solid white'
+                  fontWeight: 800, border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                 }}>
                   {unreadCount}
                 </span>
@@ -106,31 +122,29 @@ export default function Navbar() {
           )}
 
           {session?.user?.role !== "SELLER" && (
-            <Link href="/cart" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-              <span style={{ fontSize: '1.3rem' }}>🛒</span>
-              <span className="nav-label" style={{ fontSize: '0.85rem' }}>Keranjang</span>
+            <Link href="/cart" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '1.5rem' }}>🛒</span>
+              <span className="nav-label" style={{ fontSize: '0.9rem' }}>Keranjang</span>
             </Link>
           )}
           
-          <div className="nav-divider" style={{ height: '20px', width: '1px', background: '#E2E8F0' }}></div>
+          <div className="nav-divider" style={{ height: '24px', width: '1.5px', background: '#E2E8F0', margin: '0 0.5rem' }}></div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {session ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                <Link href="/orders" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+                <Link href="/orders" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
                   <span className="nav-label">Pesanan</span>
-                  <span className="nav-icon-mobile" style={{ display: 'none', fontSize: '1.3rem' }}>📦</span>
                 </Link>
 
-                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
                   <img 
                     src={session.user.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + session.user.email} 
                     alt="Profile" 
-                    style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)' }} 
+                    style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '2px solid white', boxShadow: '0 0 0 1.5px var(--color-border)' }} 
                   />
                   {session.user.name && (
-                    <span style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem' }} className="nav-label">
+                    <span style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.9rem' }} className="nav-label">
                       {session.user.name}
                     </span>
                   )}
@@ -138,18 +152,18 @@ export default function Navbar() {
 
                 <button 
                   onClick={() => signOut()} 
-                  style={{ color: '#ef4444', fontWeight: 700, fontSize: '0.8rem' }}
+                  style={{ color: '#ef4444', fontWeight: 700, fontSize: '0.85rem', padding: '0.4rem 0.8rem', borderRadius: '8px' }}
                   className="nav-label"
                 >
                   Keluar
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <Link href="/login" style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                <Link href="/login" style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.9rem' }}>
                   Masuk
                 </Link>
-                <Link href="/register" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
+                <Link href="/register" className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.85rem' }}>
                   Daftar
                 </Link>
               </div>
@@ -157,7 +171,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <ChatWidget />
     </nav>
   );
 }
+

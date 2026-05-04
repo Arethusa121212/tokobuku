@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 import StatusTracker from "@/components/StatusTracker";
+import ChatWidget from "@/components/ChatWidget";
 
 export default function RootLayout({
   children,
@@ -22,6 +23,7 @@ export default function RootLayout({
         <Providers>
           <StatusTracker />
           <Navbar />
+          <ChatWidget />
           <main className="container" style={{ flex: 1 }}>
             {children}
           </main>
