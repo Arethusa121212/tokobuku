@@ -29,6 +29,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     where,
     include: { 
       category: true,
+      seller: { select: { name: true } },
       reviews: { select: { rating: true } }
     },
     orderBy: { createdAt: "desc" },
