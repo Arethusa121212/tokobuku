@@ -27,7 +27,10 @@ export default async function Home({ searchParams }: { searchParams: any }) {
 
   const books = await prisma.book.findMany({
     where,
-    include: { category: true },
+    include: { 
+      category: true,
+      reviews: { select: { rating: true } }
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -106,27 +109,44 @@ export default async function Home({ searchParams }: { searchParams: any }) {
         </div>
       ) : (
         <div className="product-grid">
-          {books.map((book) => (
-            <Link href={`/books/${book.id}`} key={book.id} className="product-card">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover+Buku'} alt={book.title} className="product-image" />
-              <div className="product-info">
-                {book.category && (
-                  <span style={{
-                    fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-primary)',
-                    background: '#f0fdf4', padding: '0.2rem 0.6rem', borderRadius: '10px',
-                    display: 'inline-block', marginBottom: '0.4rem', width: 'fit-content'
-                  }}>
-                    {book.category.name}
-                  </span>
-                )}
-                <h3 className="product-title">{book.title}</h3>
-                <div className="product-price">
-                  Rp {book.price.toLocaleString('id-ID')}
+          {books.map((book) => {
+            const avgRating = book.reviews.length > 0 
+              ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
+              : 0;
+
+            return (
+              <Link href={`/books/${book.id}`} key={book.id} className="product-card">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover+Buku'} alt={book.title} className="product-image" />
+                <div className="product-info">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                    {book.category && (
+                      <span style={{
+                        fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-primary)',
+                        background: '#f0fdf4', padding: '0.15rem 0.5rem', borderRadius: '8px',
+                      }}>
+                        {book.category.name}
+                      </span>
+                    )}
+                    {avgRating > 0 && (
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                        ⭐ {avgRating.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="product-title" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>{book.title}</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="product-price" style={{ fontSize: '1.1rem' }}>
+                      Rp {book.price.toLocaleString('id-ID')}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: book.stock > 0 ? '#10b981' : '#ef4444', fontWeight: 600 }}>
+                      Stok: {book.stock}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

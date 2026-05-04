@@ -22,12 +22,17 @@ export default async function BookDetail({ params }: { params: any }) {
     include: { 
       seller: { select: { name: true } },
       category: true,
+      reviews: { select: { rating: true } }
     }
   });
 
   if (!book) {
     notFound();
   }
+
+  const avgRating = book.reviews.length > 0 
+    ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
+    : 0;
 
   let isWishlisted = false;
   if (session?.user) {
@@ -57,17 +62,32 @@ export default async function BookDetail({ params }: { params: any }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div>
-            {book.category && (
-              <span style={{
-                fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary)',
-                background: '#f0fdf4', padding: '0.3rem 0.8rem', borderRadius: '10px',
-                display: 'inline-block', marginBottom: '0.8rem'
-              }}>
-                {book.category.name}
-              </span>
-            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+              {book.category && (
+                <span style={{
+                  fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary)',
+                  background: '#f0fdf4', padding: '0.3rem 0.8rem', borderRadius: '10px',
+                }}>
+                  {book.category.name}
+                </span>
+              )}
+              {avgRating > 0 && (
+                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  ⭐ {avgRating.toFixed(1)} <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 500 }}>({book.reviews.length} ulasan)</span>
+                </span>
+              )}
+            </div>
             <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: '0.5rem', lineHeight: 1.2 }}>{book.title}</h1>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem' }}>Penjual: <span style={{ fontWeight: 600 }}>{book.seller?.name || 'Anonim'}</span></p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', margin: 0 }}>Penjual: <span style={{ fontWeight: 600 }}>{book.seller?.name || 'Anonim'}</span></p>
+              <div style={{ 
+                padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700,
+                background: book.stock > 0 ? '#dcfce7' : '#fee2e2',
+                color: book.stock > 0 ? '#15803d' : '#b91c1c'
+              }}>
+                Stok: {book.stock}
+              </div>
+            </div>
           </div>
           
           <div style={{ padding: '1.5rem', background: 'var(--color-bg)', borderRadius: '12px' }}>

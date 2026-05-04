@@ -114,48 +114,14 @@ export default function ReviewSection({ bookId }: ReviewSectionProps) {
           <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>
             {avgRating.toFixed(1)}
           </div>
-          {renderStars(Math.round(avgRating))}
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {renderStars(Math.round(avgRating))}
+          </div>
           <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
             {totalReviews} ulasan
           </div>
         </div>
       </div>
-
-      {/* Review Form */}
-      {session && (
-        <form onSubmit={handleSubmit} style={{
-          padding: '1.5rem', background: 'var(--color-surface)', borderRadius: '16px',
-          marginBottom: '2rem', border: '1.5px solid var(--color-border)'
-        }}>
-          <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>Tulis Ulasan</h3>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Rating</label>
-            {renderStars(rating, true)}
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Komentar (Opsional)</label>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Ceritakan pengalaman Anda..."
-              rows={3}
-              style={{
-                width: '100%', padding: '0.8rem', borderRadius: '10px',
-                border: '1.5px solid var(--color-border)', fontSize: '0.95rem',
-                resize: 'vertical', fontFamily: 'inherit'
-              }}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading || rating === 0}
-            className="btn-primary"
-            style={{ padding: '0.7rem 1.5rem', opacity: loading || rating === 0 ? 0.6 : 1 }}
-          >
-            {loading ? "Mengirim..." : "Kirim Ulasan"}
-          </button>
-        </form>
-      )}
 
       {/* Review List */}
       {fetching ? (

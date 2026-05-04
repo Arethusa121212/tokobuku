@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import PaymentUpload from "@/components/PaymentUpload";
+import OrderRatingButton from "@/components/OrderRatingButton";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +102,12 @@ export default async function OrdersPage() {
                           <span style={{ marginLeft: '0.5rem', fontStyle: 'italic', fontSize: '0.8rem' }}>(Penjual: {item.book.seller.name})</span>
                         </div>
                       </div>
-                      <div style={{ fontWeight: 700 }}>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.4rem' }}>
+                        <div style={{ fontWeight: 700 }}>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</div>
+                        {order.status === "DELIVERED" && (
+                          <OrderRatingButton bookId={item.bookId} bookTitle={item.book.title} />
+                        )}
+                      </div>
                     </div>
                   ))}
 
