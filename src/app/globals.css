@@ -57,13 +57,19 @@ body {
 
 /* Navbar Premium */
 .navbar {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
+  background: white;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 769px) {
+  .navbar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+  }
 }
 
 .navbar-brand {
@@ -152,11 +158,34 @@ body {
   animation: fadeInUp 0.6s ease forwards;
 }
 
-/* Responsive */
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .navbar-search {
+    margin: 0 1.5rem !important;
+  }
+}
+
 @media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .navbar-search {
+    display: none !important; /* Hide search on small tablets/mobile in main nav */
+  }
+
   .product-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
+  }
+
+  .hero-gradient {
+    padding: 4rem 1rem !important;
+    border-radius: 0 0 30px 30px !important;
+  }
+
+  .hero-gradient h1 {
+    font-size: 2.2rem !important;
   }
 }
 
@@ -165,5 +194,28 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.8rem;
   }
+
+  .product-info {
+    padding: 0.8rem !important;
+  }
+
+  .product-title {
+    font-size: 0.85rem !important;
+    height: 2.4rem !important;
+  }
+
+  .btn-primary {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Performance Optimizations */
+.animate-fade-in {
+  will-change: transform, opacity;
+}
+
+img {
+  content-visibility: auto;
 }
 

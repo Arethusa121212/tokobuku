@@ -23,7 +23,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem 0' }}>
-        <Link href="/" className="navbar-brand">
+        <Link href="/" className="navbar-brand" style={{ fontSize: '1.4rem' }}>
           Toko Buku
         </Link>
         
@@ -31,89 +31,76 @@ export default function Navbar() {
           <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 3rem', position: 'relative' }}>
             <input
               type="text"
-              placeholder="Mau baca buku apa hari ini?..."
+              placeholder="Cari buku..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{ 
-                width: '100%', padding: '0.8rem 1.5rem', borderRadius: '12px', 
+                width: '100%', padding: '0.7rem 1.2rem', borderRadius: '12px', 
                 border: '1.5px solid var(--color-border)', background: '#F8FAFC',
-                fontSize: '0.95rem', transition: 'all 0.2s', outline: 'none'
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-primary)';
-                e.currentTarget.style.background = 'white';
-                e.currentTarget.style.boxShadow = '0 0 0 4px var(--color-primary-light)';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-border)';
-                e.currentTarget.style.background = '#F8FAFC';
-                e.currentTarget.style.boxShadow = 'none';
+                fontSize: '0.9rem', outline: 'none'
               }}
             />
-            <span style={{ position: 'absolute', right: '1.2rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>🔍</span>
           </form>
         )}
 
-        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
+        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
           {session?.user?.role !== "SELLER" && (
-            <Link href="/cart" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'relative' }}>
-              <span style={{ fontSize: '1.4rem' }}>🛒</span>
-              <span style={{ fontSize: '0.9rem' }}>Keranjang</span>
+            <Link href="/cart" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <span style={{ fontSize: '1.3rem' }}>🛒</span>
+              <span className="nav-label" style={{ fontSize: '0.85rem' }}>Keranjang</span>
             </Link>
           )}
           
-          <div style={{ height: '24px', width: '1px', background: '#E2E8F0' }}></div>
+          <div className="nav-divider" style={{ height: '20px', width: '1px', background: '#E2E8F0' }}></div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
             {session ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-                <Link href="/orders" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'color 0.2s' }}>
-                  Pesanan
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                <Link href="/orders" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.85rem' }}>
+                  <span className="nav-label">Pesanan</span>
+                  <span className="nav-icon-mobile" style={{ display: 'none', fontSize: '1.3rem' }}>📦</span>
                 </Link>
 
-                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none', padding: '0.3rem', borderRadius: '40px', border: '1px solid var(--color-border)', background: 'white' }}>
+                <Link href="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
                     src={session.user.image || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + session.user.email} 
                     alt="Profile" 
-                    style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} 
+                    style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)' }} 
                   />
-                  <span style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem', paddingRight: '0.8rem' }}>
-                    {session.user.name?.split(' ')[0]}
-                  </span>
                 </Link>
 
-                {session.user.role === "SELLER" && (
-                  <Link href="/dashboard" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', boxShadow: 'none' }}>
-                    Dashboard
-                  </Link>
-                )}
-                
                 <button 
-                  onClick={() => {
-                    signOut();
-                    toast.success("Berhasil keluar");
-                  }} 
-                  style={{ 
-                    color: '#ef4444', fontWeight: 700, fontSize: '0.85rem' 
-                  }}
+                  onClick={() => signOut()} 
+                  style={{ color: '#ef4444', fontWeight: 700, fontSize: '0.8rem' }}
+                  className="nav-label"
                 >
                   Keluar
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <Link href="/login" style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Link href="/login" style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem' }}>
                   Masuk
                 </Link>
-                <Link href="/register" className="btn-primary" style={{ padding: '0.6rem 1.4rem', fontSize: '0.9rem' }}>
-                  Daftar Sekarang
+                <Link href="/register" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
+                  Daftar
                 </Link>
               </div>
             )}
           </div>
         </div>
       </div>
+      
+      {/* Mobile Styles Injection */}
+      <style jsx>{`
+        @media (max-width: 600px) {
+          .nav-label { display: none !important; }
+          .nav-icon-mobile { display: block !important; }
+          .nav-divider { display: none !important; }
+          .navbar-brand { font-size: 1.2rem !important; }
+        }
+      `}</style>
     </nav>
   );
 }

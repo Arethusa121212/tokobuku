@@ -43,28 +43,34 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     <div style={{ paddingBottom: '4rem' }}>
       {/* Premium Hero Section */}
       <div className="hero-gradient" style={{
-        color: 'white', padding: '6rem 2rem', borderRadius: '0 0 40px 40px',
-        marginBottom: '3rem', textAlign: 'center', margin: '0 -1.5rem',
-        boxShadow: '0 10px 30px rgba(0,170,91,0.1)'
+        color: 'white', padding: '5rem 1.5rem', borderRadius: '0 0 40px 40px',
+        marginBottom: '2.5rem', textAlign: 'center', margin: '0 -1rem',
+        boxShadow: '0 10px 30px rgba(0,170,91,0.1)', position: 'relative'
       }}>
-        <div className="container animate-fade-in">
-          <h1 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-1.5px', lineHeight: 1.1 }}>
+        <div className="container animate-fade-in" style={{ position: 'relative', zIndex: 2 }}>
+          <h1 style={{ 
+            fontSize: 'clamp(2rem, 8vw, 3.5rem)', fontWeight: 900, marginBottom: '1rem', 
+            letterSpacing: '-1.5px', lineHeight: 1.1 
+          }}>
             Surga Buku <br/><span style={{ color: '#FFD700' }}>Para Kolektor</span>
           </h1>
-          <p style={{ fontSize: '1.25rem', opacity: 0.9, marginBottom: '2.5rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-            Jelajahi ribuan koleksi buku langka, populer, dan edukatif dari penjual terpercaya di seluruh Indonesia.
+          <p style={{ 
+            fontSize: 'clamp(0.95rem, 3vw, 1.25rem)', opacity: 0.9, 
+            marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem' 
+          }}>
+            Jelajahi ribuan koleksi buku langka, populer, dan edukatif dari penjual terpercaya.
           </p>
           <div style={{ 
             maxWidth: '600px', margin: '0 auto', background: 'white', 
-            padding: '0.5rem', borderRadius: '16px', display: 'flex',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.15)' 
+            padding: '0.4rem', borderRadius: '16px', display: 'flex',
+            boxShadow: '0 15px 45px rgba(0,0,0,0.2)' 
           }}>
             <input 
               type="text" 
-              placeholder="Cari judul buku atau penulis..." 
-              style={{ flex: 1, border: 'none', padding: '0 1.5rem', outline: 'none', color: '#333', fontSize: '1rem' }}
+              placeholder="Cari buku..." 
+              style={{ flex: 1, border: 'none', padding: '0 1rem', outline: 'none', color: '#333', fontSize: '0.95rem', minWidth: '0' }}
             />
-            <button className="btn-primary" style={{ padding: '0.8rem 2rem' }}>Cari</button>
+            <button className="btn-primary" style={{ padding: '0.7rem 1.5rem', borderRadius: '12px' }}>Cari</button>
           </div>
         </div>
       </div>
