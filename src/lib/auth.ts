@@ -50,9 +50,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.role = user.role;
-        token.id = user.id;
-        token.bankAccount = user.bankAccount;
+        const u = user as any;
+        token.role = u.role;
+        token.id = u.id;
+        token.bankAccount = u.bankAccount;
       }
       if (trigger === "update" && session) {
         token.name = session.name;
