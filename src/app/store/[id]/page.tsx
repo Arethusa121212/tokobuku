@@ -115,7 +115,6 @@ export default async function StorePage({ params }: { params: Promise<{ id: stri
               )}
           </div>
 
-          </div>
 
           <hr style={{ margin: '2.5rem 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />
 
