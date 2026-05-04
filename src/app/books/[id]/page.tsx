@@ -9,12 +9,10 @@ export default async function BookDetail({ params }: { params: any }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  // Safe session fetch
-  let session = null;
-  try {
-    session = await getServerSession(authOptions);
-  } catch (e) {
-    console.error("Session fetch failed", e);
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role === "SELLER") {
+    const { redirect } = await import("next/navigation");
+    redirect("/dashboard");
   }
 
   const book = await prisma.book.findUnique({

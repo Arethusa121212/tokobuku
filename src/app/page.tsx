@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 export default async function Home({ searchParams }: { searchParams: any }) {
   const session = await getServerSession(authOptions);
 
-  // if (session?.user?.role === "SELLER") {
-  //   redirect("/dashboard");
-  // }
+  if (session?.user?.role === "SELLER") {
+    redirect("/dashboard");
+  }
   
   const resolvedParams = await searchParams;
   const search = resolvedParams?.search || "";
