@@ -16,6 +16,10 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   const resolvedParams = await searchParams;
   const search = resolvedParams?.search || "";
   const categoryFilter = resolvedParams?.category || "";
+  const minPrice = parseInt(resolvedParams?.minPrice) || 0;
+  const maxPrice = parseInt(resolvedParams?.maxPrice) || 0;
+  const minRating = parseInt(resolvedParams?.minRating) || 0;
+  const inStock = resolvedParams?.inStock === "true";
 
   // Build where clause
   const where: any = {};
@@ -25,8 +29,16 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   if (categoryFilter) {
     where.category = { name: categoryFilter };
   }
+  if (minPrice > 0 || maxPrice > 0) {
+    where.price = {};
+    if (minPrice > 0) where.price.gte = minPrice;
+    if (maxPrice > 0) where.price.lte = maxPrice;
+  }
+  if (inStock) {
+    where.stock = { gt: 0 };
+  }
 
-  const books = await prisma.book.findMany({
+  let books = await prisma.book.findMany({
     where,
     include: { 
       category: true,
@@ -36,9 +48,20 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     orderBy: { createdAt: "desc" },
   });
 
+  // Filter by rating in memory
+  if (minRating > 0) {
+    books = books.filter(book => {
+      const avg = book.reviews.length > 0 
+        ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
+        : 0;
+      return avg >= minRating;
+    });
+  }
+
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },
   });
+
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -112,6 +135,85 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               </Link>
             ))}
           </div>
+        </div>
+
+        {/* Filter Bar */}
+        <div style={{ marginBottom: '3rem' }}>
+          <form method="GET" action="/" style={{
+            background: 'white', padding: '1.5rem', borderRadius: '24px',
+            boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)',
+            display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'flex-end'
+          }}>
+            {/* Price Filter */}
+            <div style={{ flex: '1 1 200px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.6rem', color: 'var(--color-text-secondary)' }}>
+                Rentang Harga (Rp)
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <input 
+                  type="number" 
+                  name="minPrice" 
+                  placeholder="Min" 
+                  defaultValue={resolvedParams?.minPrice}
+                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid var(--color-border)', fontSize: '0.9rem', outline: 'none' }}
+                />
+                <span style={{ color: '#ccc' }}>-</span>
+                <input 
+                  type="number" 
+                  name="maxPrice" 
+                  placeholder="Max" 
+                  defaultValue={resolvedParams?.maxPrice}
+                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid var(--color-border)', fontSize: '0.9rem', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            {/* Rating Filter */}
+            <div style={{ flex: '1 1 150px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.6rem', color: 'var(--color-text-secondary)' }}>
+                Rating Minimal
+              </label>
+              <select 
+                name="minRating" 
+                defaultValue={resolvedParams?.minRating || "0"}
+                style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid var(--color-border)', fontSize: '0.9rem', outline: 'none', background: 'white' }}
+              >
+                <option value="0">Semua Rating</option>
+                <option value="4">⭐ 4+ Bintang</option>
+                <option value="3">⭐ 3+ Bintang</option>
+                <option value="2">⭐ 2+ Bintang</option>
+              </select>
+            </div>
+
+            {/* Stock Filter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flex: '0 0 auto', paddingBottom: '0.6rem' }}>
+              <input 
+                type="checkbox" 
+                name="inStock" 
+                value="true" 
+                id="inStock"
+                defaultChecked={resolvedParams?.inStock === "true"}
+                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--color-primary)' }}
+              />
+              <label htmlFor="inStock" style={{ fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer' }}>
+                Hanya Stok Tersedia
+              </label>
+            </div>
+
+            {/* Submit Button */}
+            <div style={{ flex: '0 0 auto' }}>
+              <button type="submit" className="btn-primary" style={{ padding: '0.6rem 2rem', borderRadius: '10px' }}>
+                Terapkan Filter
+              </button>
+            </div>
+            
+            {/* Clear Filter */}
+            {(resolvedParams?.minPrice || resolvedParams?.maxPrice || resolvedParams?.minRating || resolvedParams?.inStock) && (
+              <Link href="/" style={{ color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, paddingBottom: '0.8rem' }}>
+                Reset
+              </Link>
+            )}
+          </form>
         </div>
 
         {/* Search result info */}
