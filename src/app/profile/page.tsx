@@ -277,15 +277,7 @@ export default function ProfilePage() {
               <><span>❤️</span> Wishlist Saya</>
             )}
           </div>
-          {!isSeller && (
-            <Link href="/messages" style={{ 
-              fontSize: '0.85rem', color: 'var(--color-primary)', 
-              textDecoration: 'none', background: 'var(--color-primary-light)',
-              padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: 700
-            }}>
-              💬 Daftar Pesan
-            </Link>
-          )}
+
         </h2>
 
         {dataLoading ? (

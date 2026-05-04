@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import BookInteraction from "@/components/BookInteraction";
 import ReviewSection from "@/components/ReviewSection";
@@ -77,7 +78,12 @@ export default async function BookDetail({ params }: { params: any }) {
             </div>
             <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: '0.5rem', lineHeight: 1.2 }}>{book.title}</h1>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', margin: 0 }}>Penjual: <span style={{ fontWeight: 600 }}>{book.seller?.name || 'Anonim'}</span></p>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', margin: 0 }}>
+                Penjual: 
+                <Link href={`/store/${book.seller?.id}`} style={{ color: 'var(--color-primary)', fontWeight: 700, marginLeft: '0.4rem', textDecoration: 'none' }} className="seller-link">
+                  {book.seller?.name || 'Anonim'}
+                </Link>
+              </p>
               <div style={{ 
                 padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700,
                 background: book.stock > 0 ? '#dcfce7' : '#fee2e2',

@@ -42,7 +42,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     where,
     include: { 
       category: true,
-      seller: { select: { name: true } },
+      seller: { select: { id: true, name: true } },
       reviews: { select: { rating: true } }
     },
     orderBy: { createdAt: "desc" },
@@ -225,7 +225,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                         </Link>
                         <div style={{ marginTop: 'auto' }}>
                           <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>Rp {book.price.toLocaleString('id-ID')}</div>
-                          <Link href={`/store/${book.sellerId}`} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.7rem', marginTop: '0.3rem', textDecoration: 'none' }} className="seller-link">
+                          <Link href={`/store/${book.seller?.id}`} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.7rem', marginTop: '0.3rem', textDecoration: 'none' }} className="seller-link">
                             <span>👤 {book.seller?.name || 'Anonim'}</span>
                           </Link>
                           <div style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
