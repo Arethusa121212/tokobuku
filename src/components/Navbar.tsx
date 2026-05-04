@@ -27,20 +27,24 @@ export default function Navbar() {
           Toko Buku
         </Link>
         
-        <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 2rem' }}>
-          <input
-            type="text"
-            placeholder="Cari buku apa hari ini?"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-          />
-        </form>
+        {session?.user?.role !== "SELLER" && (
+          <form onSubmit={handleSearch} className="navbar-search" style={{ flex: 1, margin: '0 2rem' }}>
+            <input
+              type="text"
+              placeholder="Cari buku apa hari ini?"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+            />
+          </form>
+        )}
 
-        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <Link href="/cart" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ fontSize: '1.2rem' }}>🛒</span> Keranjang
-          </Link>
+        <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginLeft: session?.user?.role === "SELLER" ? 'auto' : '0' }}>
+          {session?.user?.role !== "SELLER" && (
+            <Link href="/cart" style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '1.2rem' }}>🛒</span> Keranjang
+            </Link>
+          )}
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {session ? (

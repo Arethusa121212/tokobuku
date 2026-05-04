@@ -13,6 +13,10 @@ export default async function CartPage() {
     redirect("/login");
   }
 
+  if (session.user.role === "SELLER") {
+    redirect("/dashboard");
+  }
+
   const cartItems = await prisma.cartItem.findMany({
     where: { userId: session.user.id },
     include: { book: true },
