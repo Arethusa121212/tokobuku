@@ -194,8 +194,8 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--color-text-secondary)' }}>Rating</label>
                   <select name="minRating" defaultValue={resolvedParams?.minRating || "0"} style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.8rem', outline: 'none', background: 'white' }}>
                     <option value="0">Semua</option>
-                    <option value="4">⭐ 4+</</option>
-                    <option value="3">⭐ 3+</</option>
+                    <option value="4">⭐ 4+ Bintang</option>
+                    <option value="3">⭐ 3+ Bintang</option>
                   </select>
                 </div>
                 <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1.2rem', borderRadius: '8px', fontSize: '0.85rem' }}>Filter</button>
