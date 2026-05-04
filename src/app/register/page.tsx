@@ -14,6 +14,7 @@ export default function Register() {
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [accountHolder, setAccountHolder] = useState("");
+  const [image, setImage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,6 +37,7 @@ export default function Register() {
     setBankName("");
     setAccountNumber("");
     setAccountHolder("");
+    setImage("");
     setError("");
   };
 
@@ -66,7 +68,7 @@ export default function Register() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role, bankName, accountNumber, accountHolder }),
+        body: JSON.stringify({ name, email, password, role, bankName, accountNumber, accountHolder, image }),
       });
 
       if (res.ok) {
@@ -251,6 +253,20 @@ export default function Register() {
           {email && !emailValid && (
             <p style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.3rem' }}>Gunakan format email resmi (contoh: nama@email.com)</p>
           )}
+        </div>
+
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>URL Foto Profil (Opsional)</label>
+          <input
+            type="text"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            placeholder="https://link-foto.com/foto.jpg"
+            style={inputStyle}
+          />
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem', marginTop: '0.3rem' }}>
+            Biarkan kosong untuk menggunakan avatar otomatis.
+          </p>
         </div>
 
         <div style={{ position: 'relative' }}>

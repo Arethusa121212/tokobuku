@@ -47,6 +47,7 @@ model User {
   accountHolder String?
   storeDescription String?
   location      String? @default("Indonesia")
+  whatsapp      String?
   joinedAt      DateTime @default(now())
   
   accounts      Account[]

@@ -94,9 +94,17 @@ export default async function StorePage({ params }: { params: { id: string } }) 
 
             {/* Action */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <button className="btn-primary" style={{ padding: '1rem 2.5rem', borderRadius: '16px', fontSize: '1rem' }}>
-                Chat Penjual
-              </button>
+              {store.whatsapp && (
+                <a 
+                  href={`https://wa.me/${store.whatsapp.replace(/\D/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-primary" 
+                  style={{ padding: '1rem 2.5rem', borderRadius: '16px', fontSize: '1rem', background: '#25D366', borderColor: '#25D366', boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)', textDecoration: 'none', textAlign: 'center' }}
+                >
+                  💬 Chat WhatsApp
+                </a>
+              )}
               <button style={{ 
                 padding: '0.8rem', borderRadius: '16px', border: '1px solid var(--color-border)',
                 fontWeight: 700, color: 'var(--color-text-primary)', background: 'white'

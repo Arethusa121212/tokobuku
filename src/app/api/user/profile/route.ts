@@ -3,41 +3,19 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-export async function PATCH(req: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, image, bankName, accountNumber, accountHolder } = await req.json();
-
-    const updatedUser = await prisma.user.update({
+    const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      data: {
-        name: name || undefined,
-        image: image || undefined,
-        bankName: bankName || undefined,
-        accountNumber: accountNumber || undefined,
-        accountHolder: accountHolder || undefined,
-      },
     });
 
-    return NextResponse.json({ 
-      message: "Profil berhasil diperbarui", 
-      user: { 
-        name: updatedUser.name, 
-        image: updatedUser.image, 
-        bankName: updatedUser.bankName,
-        accountNumber: updatedUser.accountNumber,
-        accountHolder: updatedUser.accountHolder
-      } 
-    }, { status: 200 });
+    return NextResponse.json(user);
   } catch (error: any) {
-    return NextResponse.json({ 
-      message: "Gagal memperbarui profil", 
-      error: error.message 
-    }, { status: 500 });
+    return NextResponse.json({ message: "Error fetching profile", error: error.message }, { status: 500 });
   }
 }
