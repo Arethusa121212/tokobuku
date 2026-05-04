@@ -62,6 +62,21 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     orderBy: { name: "asc" },
   });
 
+  const totalBooks = await prisma.book.count();
+
+  // Fetch Top Sellers (Top 3 by avg rating)
+  const topBooks = await prisma.book.findMany({
+    take: 3,
+    include: { reviews: true, category: true },
+    orderBy: { reviews: { _count: 'desc' } } // Simple proxy for popularity
+  });
+
+  // Fetch Recent Reviews
+  const recentReviews = await prisma.review.findMany({
+    take: 3,
+    include: { user: { select: { name: true } }, book: { select: { title: true } } },
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -100,204 +115,174 @@ export default async function Home({ searchParams }: { searchParams: any }) {
       </div>
 
       <div className="container">
-        {/* Category Highlights */}
-        <div style={{ marginBottom: '4rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Kategori Populer</h2>
-            <Link href="/" style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.9rem' }}>Lihat Semua →</Link>
-          </div>
-          <div style={{ display: 'flex', gap: '1.2rem', justifyContent: 'center', padding: '0.5rem 0', overflowX: 'auto', scrollbarWidth: 'none' }}>
-            {[
-              { name: 'Fiksi', icon: '📖' },
-              { name: 'Bisnis', icon: '📈' },
-              { name: 'Teknologi', icon: '💻' },
-              { name: 'Sejarah', icon: '🏺' },
-              { name: 'Anak', icon: '🧸' },
-              { name: 'Edukasi', icon: '🎓' },
-              { name: 'Komik', icon: '📚' },
-              { name: 'Religi', icon: '🕌' },
-              { name: 'Kesehatan', icon: '🏥' },
-              { name: 'Seni', icon: '🎨' },
-            ].map((cat) => (
-              <Link 
-                key={cat.name}
-                href={`/?category=${cat.name}`}
-                style={{
-                  minWidth: '100px', height: '120px', background: 'white',
-                  borderRadius: '24px', display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center', gap: '0.8rem',
-                  boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                <span style={{ fontSize: '2rem' }}>{cat.icon}</span>
-                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#444' }}>{cat.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Filter Bar */}
-        <div style={{ marginBottom: '3rem' }}>
-          <form method="GET" action="/" style={{
-            background: 'white', padding: '1.5rem', borderRadius: '24px',
-            boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)',
-            display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'flex-end'
-          }}>
-            {/* Price Filter */}
-            <div style={{ flex: '1 1 200px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.6rem', color: 'var(--color-text-secondary)' }}>
-                Rentang Harga (Rp)
-              </label>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <input 
-                  type="number" 
-                  name="minPrice" 
-                  placeholder="Min" 
-                  defaultValue={resolvedParams?.minPrice}
-                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid var(--color-border)', fontSize: '0.9rem', outline: 'none' }}
-                />
-                <span style={{ color: '#ccc' }}>-</span>
-                <input 
-                  type="number" 
-                  name="maxPrice" 
-                  placeholder="Max" 
-                  defaultValue={resolvedParams?.maxPrice}
-                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid var(--color-border)', fontSize: '0.9rem', outline: 'none' }}
-                />
+        <div className="home-layout">
+          {/* LEFT SIDEBAR */}
+          <aside className="sidebar">
+            <div className="sidebar-card">
+              <h3 className="sidebar-title">📂 Kategori Lengkap</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                {categories.map(cat => (
+                  <Link key={cat.id} href={`/?category=${cat.name}`} style={{ 
+                    fontSize: '0.85rem', color: categoryFilter === cat.name ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                    fontWeight: categoryFilter === cat.name ? 800 : 500,
+                    transition: 'all 0.2s'
+                  }}>
+                    {cat.name}
+                  </Link>
+                ))}
               </div>
             </div>
 
-            {/* Rating Filter */}
-            <div style={{ flex: '1 1 150px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.6rem', color: 'var(--color-text-secondary)' }}>
-                Rating Minimal
-              </label>
-              <select 
-                name="minRating" 
-                defaultValue={resolvedParams?.minRating || "0"}
-                style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '10px', border: '1px solid var(--color-border)', fontSize: '0.9rem', outline: 'none', background: 'white' }}
-              >
-                <option value="0">Semua Rating</option>
-                <option value="4">⭐ 4+ Bintang</option>
-                <option value="3">⭐ 3+ Bintang</option>
-                <option value="2">⭐ 2+ Bintang</option>
-              </select>
+            <div className="sidebar-card" style={{ background: 'var(--color-primary)', color: 'white' }}>
+              <h3 className="sidebar-title" style={{ color: 'white' }}>📊 Statistik Toko</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{totalBooks}+</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Koleksi Buku</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>100%</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Penjual Terverifikasi</div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* MAIN CONTENT */}
+          <div className="main-content">
+            {/* Category Highlights */}
+            <div style={{ marginBottom: '3rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.3rem', fontWeight: 800 }}>Pilihan Populer</h2>
+              </div>
+              <div style={{ display: 'flex', gap: '0.8rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
+                {[
+                  { name: 'Fiksi', icon: '📖' },
+                  { name: 'Bisnis', icon: '📈' },
+                  { name: 'Teknologi', icon: '💻' },
+                  { name: 'Sejarah', icon: '🏺' },
+                  { name: 'Anak', icon: '🧸' },
+                ].map((cat) => (
+                  <Link key={cat.name} href={`/?category=${cat.name}`} style={{
+                      minWidth: '80px', padding: '1rem', background: 'white',
+                      borderRadius: '20px', display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', gap: '0.5rem', boxShadow: 'var(--shadow-sm)',
+                      border: '1px solid var(--color-border)'
+                    }}>
+                    <span style={{ fontSize: '1.5rem' }}>{cat.icon}</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>{cat.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            {/* Stock Filter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flex: '0 0 auto', paddingBottom: '0.6rem' }}>
-              <input 
-                type="checkbox" 
-                name="inStock" 
-                value="true" 
-                id="inStock"
-                defaultChecked={resolvedParams?.inStock === "true"}
-                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--color-primary)' }}
-              />
-              <label htmlFor="inStock" style={{ fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer' }}>
-                Hanya Stok Tersedia
-              </label>
-            </div>
-
-            {/* Submit Button */}
-            <div style={{ flex: '0 0 auto' }}>
-              <button type="submit" className="btn-primary" style={{ padding: '0.6rem 2rem', borderRadius: '10px' }}>
-                Terapkan Filter
-              </button>
-            </div>
-            
-            {/* Clear Filter */}
-            {(resolvedParams?.minPrice || resolvedParams?.maxPrice || resolvedParams?.minRating || resolvedParams?.inStock) && (
-              <Link href="/" style={{ color: '#ef4444', fontSize: '0.85rem', fontWeight: 700, paddingBottom: '0.8rem' }}>
-                Reset
-              </Link>
-            )}
-          </form>
-        </div>
-
-        {/* Search result info */}
-        {search && (
-          <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--color-primary-light)', borderRadius: '16px', border: '1px dashed var(--color-primary)' }}>
-            <p style={{ color: 'var(--color-primary-hover)', fontWeight: 600 }}>
-              🔎 Menampilkan hasil untuk: &quot;{search}&quot; ({books.length} buku ditemukan)
-            </p>
-          </div>
-        )}
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
-          <div>
-            <h2 style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.5px' }}>
-              {categoryFilter ? `Koleksi ${categoryFilter}` : 'Jelajahi Buku'}
-            </h2>
-            <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>Pilihan terbaik untuk menemani waktu luangmu</p>
-          </div>
-        </div>
-
-        {books.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '6rem 2rem', background: 'white', borderRadius: '32px', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>📭</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Oops! Buku tidak ditemukan</h3>
-            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>Coba gunakan kata kunci lain atau jelajahi kategori populer kami.</p>
-            <Link href="/" className="btn-primary">Kembali ke Beranda</Link>
-          </div>
-        ) : (
-          <div className="product-grid">
-            {books.map((book) => {
-              const avgRating = book.reviews.length > 0 
-                ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
-                : 0;
-
-              return (
-                <Link href={`/books/${book.id}`} key={book.id} className="product-card animate-fade-in">
-                  <div className="product-image-container">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover+Buku'} alt={book.title} className="product-image" />
-                    {book.stock <= 5 && book.stock > 0 && (
-                      <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#EF144A', color: 'white', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800 }}>
-                        STOK TERBATAS!
-                      </div>
-                    )}
-                    {book.stock === 0 && (
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800 }}>
-                        HABIS terjual
-                      </div>
-                    )}
+            {/* Filter Bar */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <form method="GET" action="/" style={{
+                background: 'white', padding: '1.2rem', borderRadius: '20px',
+                boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)',
+                display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end'
+              }}>
+                <div style={{ flex: '1 1 150px' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--color-text-secondary)' }}>Harga</label>
+                  <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                    <input type="number" name="minPrice" placeholder="Min" defaultValue={resolvedParams?.minPrice} style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.8rem', outline: 'none' }} />
+                    <input type="number" name="maxPrice" placeholder="Max" defaultValue={resolvedParams?.maxPrice} style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.8rem', outline: 'none' }} />
                   </div>
-                  <div className="product-info">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '0.2rem 0.6rem', borderRadius: '10px' }}>
-                        {book.category?.name || 'Umum'}
-                      </span>
-                      {avgRating > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.85rem', fontWeight: 800, color: '#f59e0b' }}>
-                          ⭐ {avgRating.toFixed(1)}
+                </div>
+                <div style={{ flex: '1 1 120px' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.4rem', color: 'var(--color-text-secondary)' }}>Rating</label>
+                  <select name="minRating" defaultValue={resolvedParams?.minRating || "0"} style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-border)', fontSize: '0.8rem', outline: 'none', background: 'white' }}>
+                    <option value="0">Semua</option>
+                    <option value="4">⭐ 4+</</option>
+                    <option value="3">⭐ 3+</</option>
+                  </select>
+                </div>
+                <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1.2rem', borderRadius: '8px', fontSize: '0.85rem' }}>Filter</button>
+              </form>
+            </div>
+
+            {/* Book List */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 900 }}>{categoryFilter || 'Semua Buku'}</h2>
+            </div>
+
+            {books.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', borderRadius: '24px' }}>
+                <div style={{ fontSize: '3rem' }}>📭</div>
+                <p>Tidak ada buku yang sesuai filter.</p>
+              </div>
+            ) : (
+              <div className="product-grid">
+                {books.map((book) => {
+                  const avgRating = book.reviews.length > 0 
+                    ? book.reviews.reduce((acc, r) => acc + r.rating, 0) / book.reviews.length 
+                    : 0;
+                  return (
+                    <Link href={`/books/${book.id}`} key={book.id} className="product-card animate-fade-in">
+                      <div className="product-image-container">
+                        <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover'} alt={book.title} className="product-image" />
+                      </div>
+                      <div className="product-info">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '0.2rem 0.5rem', borderRadius: '8px' }}>
+                            {book.category?.name || 'Umum'}
+                          </span>
+                          {avgRating > 0 && <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#f59e0b' }}>⭐ {avgRating.toFixed(1)}</span>}
                         </div>
-                      )}
+                        <h3 className="product-title">{book.title}</h3>
+                        <div style={{ marginTop: 'auto' }}>
+                          <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>Rp {book.price.toLocaleString('id-ID')}</div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
+                            📦 Stok: {book.stock}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT SIDEBAR */}
+          <aside className="sidebar">
+            <div className="sidebar-card">
+              <h3 className="sidebar-title">🔥 Buku Terlaris</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                {topBooks.map(book => (
+                  <Link key={book.id} href={`/books/${book.id}`} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                    <img src={book.imageUrl || 'https://via.placeholder.com/300x400'} alt="" style={{ width: '50px', height: '65px', borderRadius: '8px', objectFit: 'cover' }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-primary)', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-primary)', fontWeight: 800 }}>Rp {book.price.toLocaleString('id-ID')}</div>
                     </div>
-                    
-                    <h3 className="product-title">{book.title}</h3>
-                    
-                    <div style={{ marginTop: 'auto' }}>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-text-primary)', marginBottom: '0.4rem' }}>
-                        Rp {book.price.toLocaleString('id-ID')}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem' }}>
-                        <span>👤 {book.seller?.name || 'Anonim'}</span>
-                        <span style={{ 
-                          padding: '0.2rem 0.5rem', background: book.stock > 0 ? '#f1f5f9' : '#fee2e2', 
-                          borderRadius: '6px', fontWeight: 700, color: book.stock > 0 ? '#475569' : '#ef4444' 
-                        }}>
-                          📦 Stok: {book.stock}
-                        </span>
-                      </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="sidebar-card">
+              <h3 className="sidebar-title">💬 Ulasan Terbaru</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                {recentReviews.map(review => (
+                  <div key={review.id} style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '0.8rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{review.user.name}</span>
+                      <span style={{ color: '#f59e0b', fontSize: '0.75rem' }}>{'⭐'.repeat(review.rating)}</span>
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      &quot;{review.comment || 'Puas dengan bukunya!'}&quot;
+                    </div>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--color-primary)', marginTop: '0.4rem', fontWeight: 600 }}>
+                      pada {review.book.title}
                     </div>
                   </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
 
         {/* Newsletter Section */}
         <div style={{
@@ -306,21 +291,17 @@ export default async function Home({ searchParams }: { searchParams: any }) {
           position: 'relative', overflow: 'hidden'
         }}>
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem' }}>Jangan Sampai Ketinggalan!</h2>
+            <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem' }}>Komunitas Pembaca Kami</h2>
             <p style={{ opacity: 0.8, marginBottom: '2.5rem', maxWidth: '500px', margin: '0 auto 2.5rem' }}>
-              Dapatkan info buku terbaru dan promo eksklusif langsung di email Anda.
+              Bergabunglah dengan ribuan kolektor buku lainnya dan dapatkan info promo eksklusif.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '450px', margin: '0 auto' }}>
-              <input 
-                type="email" 
-                placeholder="Alamat email Anda..." 
-                style={{ flex: 1, padding: '1rem 1.5rem', borderRadius: '12px', border: 'none', outline: 'none', fontSize: '1rem' }}
-              />
-              <button className="btn-primary" style={{ padding: '0 2rem' }}>Daftar</button>
+              <input type="email" placeholder="Email Anda..." style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: 'none', outline: 'none' }} />
+              <button className="btn-primary">Daftar</button>
             </div>
-          </div>
         </div>
       </div>
     </div>
   );
 }
+
