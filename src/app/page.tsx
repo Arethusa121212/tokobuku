@@ -1,9 +1,17 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: { searchParams: any }) {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user?.role === "SELLER") {
+    redirect("/dashboard");
+  }
   const resolvedParams = await searchParams;
   const search = resolvedParams?.search || "";
   const categoryFilter = resolvedParams?.category || "";

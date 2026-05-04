@@ -15,9 +15,10 @@ export default function ProfilePage() {
   const [accountNumber, setAccountNumber] = useState("");
   const [accountHolder, setAccountHolder] = useState("");
   const [wishlist, setWishlist] = useState<any[]>([]);
+  const [salesHistory, setSalesHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
     if (session?.user) {
@@ -27,7 +28,12 @@ export default function ProfilePage() {
       setBankName(u.bankName || "");
       setAccountNumber(u.accountNumber || "");
       setAccountHolder(u.accountHolder || "");
-      fetchWishlist();
+      
+      if (u.role === "SELLER") {
+        fetchSalesHistory();
+      } else {
+        fetchWishlist();
+      }
     }
   }, [session]);
 
@@ -41,7 +47,21 @@ export default function ProfilePage() {
     } catch (err) {
       console.error("Failed to fetch wishlist");
     } finally {
-      setWishlistLoading(false);
+      setDataLoading(false);
+    }
+  };
+
+  const fetchSalesHistory = async () => {
+    try {
+      const res = await fetch("/api/user/sales-history");
+      if (res.ok) {
+        const data = await res.json();
+        setSalesHistory(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch sales history");
+    } finally {
+      setDataLoading(false);
     }
   };
 
@@ -216,39 +236,74 @@ export default function ProfilePage() {
         </form>
       </div>
 
-      {/* Wishlist Section */}
+      {/* Conditional Section: Wishlist for Customer, Sales History for Seller */}
       <div style={{ padding: '2.5rem', background: 'var(--color-surface)', borderRadius: '24px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span>❤️</span> Wishlist Saya
+          {isSeller ? (
+            <><span style={{ color: 'var(--color-primary)' }}>💹</span> Penjualan Berhasil</>
+          ) : (
+            <><span>❤️</span> Wishlist Saya</>
+          )}
         </h2>
 
-        {wishlistLoading ? (
-          <p>Memuat wishlist...</p>
-        ) : wishlist.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)', background: 'var(--color-bg)', borderRadius: '16px' }}>
-            <p>Belum ada buku di wishlist.</p>
-            <Link href="/" style={{ color: 'var(--color-primary)', fontWeight: 600, fontSize: '0.9rem', marginTop: '1rem', display: 'inline-block' }}>Cari Buku</Link>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-            {wishlist.map((item) => (
-              <div key={item.id} style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--color-bg)', borderRadius: '16px', position: 'relative', border: '1.5px solid var(--color-border)' }}>
-                <img src={item.book.imageUrl || 'https://via.placeholder.com/60x80'} alt={item.book.title} style={{ width: '60px', height: '80px', borderRadius: '8px', objectFit: 'cover' }} />
-                <div style={{ flex: 1 }}>
-                  <Link href={`/books/${item.bookId}`} style={{ textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '1rem', display: 'block', marginBottom: '0.2rem' }}>
-                    {item.book.title}
-                  </Link>
-                  <div style={{ color: 'var(--color-primary)', fontWeight: 700 }}>Rp {item.book.price.toLocaleString('id-ID')}</div>
+        {dataLoading ? (
+          <p>Memuat data...</p>
+        ) : isSeller ? (
+          salesHistory.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)', background: 'var(--color-bg)', borderRadius: '16px' }}>
+              <p>Belum ada penjualan yang selesai.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              {salesHistory.map((sale) => (
+                <div key={sale.id} style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--color-bg)', borderRadius: '16px', border: '1.5px solid var(--color-border)' }}>
+                  <img src={sale.book.imageUrl || 'https://via.placeholder.com/60x80'} alt={sale.book.title} style={{ width: '50px', height: '70px', borderRadius: '8px', objectFit: 'cover' }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{sale.book.title}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Oleh: {sale.order.user.name}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.3rem' }}>
+                      <div style={{ color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.9rem' }}>Rp {(sale.price * sale.quantity).toLocaleString('id-ID')}</div>
+                      <span style={{ 
+                        fontSize: '0.7rem', padding: '0.2rem 0.5rem', borderRadius: '10px', 
+                        background: sale.order.status === 'DELIVERED' ? '#dcfce7' : '#e0e7ff',
+                        color: sale.order.status === 'DELIVERED' ? '#15803d' : '#4338ca',
+                        fontWeight: 700
+                      }}>
+                        {sale.order.status === 'DELIVERED' ? 'Selesai' : 'Sedang Dikirim'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <button 
-                  onClick={() => handleRemoveWishlist(item.bookId)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0.5rem' }}
-                >
-                  🗑️
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )
+        ) : (
+          wishlist.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)', background: 'var(--color-bg)', borderRadius: '16px' }}>
+              <p>Belum ada buku di wishlist.</p>
+              <Link href="/" style={{ color: 'var(--color-primary)', fontWeight: 600, fontSize: '0.9rem', marginTop: '1rem', display: 'inline-block' }}>Cari Buku</Link>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              {wishlist.map((item) => (
+                <div key={item.id} style={{ display: 'flex', gap: '1rem', padding: '1rem', background: 'var(--color-bg)', borderRadius: '16px', position: 'relative', border: '1.5px solid var(--color-border)' }}>
+                  <img src={item.book.imageUrl || 'https://via.placeholder.com/60x80'} alt={item.book.title} style={{ width: '60px', height: '80px', borderRadius: '8px', objectFit: 'cover' }} />
+                  <div style={{ flex: 1 }}>
+                    <Link href={`/books/${item.bookId}`} style={{ textDecoration: 'none', color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '1rem', display: 'block', marginBottom: '0.2rem' }}>
+                      {item.book.title}
+                    </Link>
+                    <div style={{ color: 'var(--color-primary)', fontWeight: 700 }}>Rp {item.book.price.toLocaleString('id-ID')}</div>
+                  </div>
+                  <button 
+                    onClick={() => handleRemoveWishlist(item.bookId)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0.5rem' }}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>
