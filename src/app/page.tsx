@@ -7,39 +7,38 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: { searchParams: any }) {
-  try {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (session?.user?.role === "SELLER") {
-      redirect("/dashboard");
-    }
-    const resolvedParams = await searchParams;
-    const search = resolvedParams?.search || "";
-    const categoryFilter = resolvedParams?.category || "";
+  // if (session?.user?.role === "SELLER") {
+  //   redirect("/dashboard");
+  // }
+  
+  const resolvedParams = await searchParams;
+  const search = resolvedParams?.search || "";
+  const categoryFilter = resolvedParams?.category || "";
 
-    // Build where clause
-    const where: any = {};
-    if (search) {
-      where.title = { contains: search, mode: "insensitive" };
-    }
-    if (categoryFilter) {
-      where.category = { name: categoryFilter };
-    }
+  // Build where clause
+  const where: any = {};
+  if (search) {
+    where.title = { contains: search, mode: "insensitive" };
+  }
+  if (categoryFilter) {
+    where.category = { name: categoryFilter };
+  }
 
-    const books = await prisma.book.findMany({
-      where,
-      include: { 
-        category: true,
-        seller: { select: { name: true } },
-        reviews: { select: { rating: true } }
-      },
-      orderBy: { createdAt: "desc" },
-    });
+  const books = await prisma.book.findMany({
+    where,
+    include: { 
+      category: true,
+      seller: { select: { name: true } },
+      reviews: { select: { rating: true } }
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
-    const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" },
-    });
-
+  const categories = await prisma.category.findMany({
+    orderBy: { name: "asc" },
+  });
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -86,12 +85,12 @@ export default async function Home({ searchParams }: { searchParams: any }) {
           </div>
           <div style={{ display: 'flex', gap: '1.2rem', overflowX: 'auto', padding: '0.5rem 0', scrollbarWidth: 'none' }}>
             {[
-              { name: 'Fiksi', icon: '🎨', color: '#FF6B6B' },
-              { name: 'Bisnis', icon: '📈', color: '#4D96FF' },
-              { name: 'Teknologi', icon: '💻', color: '#6BCB77' },
-              { name: 'Sejarah', icon: '🏺', color: '#FFD93D' },
-              { name: 'Anak', icon: '🧸', color: '#92A9BD' },
-              { name: 'Edukasi', icon: '🎓', color: '#B983FF' },
+              { name: 'Fiksi', icon: '🎨' },
+              { name: 'Bisnis', icon: '📈' },
+              { name: 'Teknologi', icon: '💻' },
+              { name: 'Sejarah', icon: '🏺' },
+              { name: 'Anak', icon: '🧸' },
+              { name: 'Edukasi', icon: '🎓' },
             ].map((cat) => (
               <Link 
                 key={cat.name}
@@ -102,16 +101,6 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                   alignItems: 'center', justifyContent: 'center', gap: '0.8rem',
                   boxShadow: 'var(--shadow-sm)', border: '1px solid var(--color-border)',
                   transition: 'all 0.3s ease'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.borderColor = 'var(--color-primary)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'var(--color-border)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                 }}
               >
                 <span style={{ fontSize: '2rem' }}>{cat.icon}</span>
@@ -137,15 +126,6 @@ export default async function Home({ searchParams }: { searchParams: any }) {
             </h2>
             <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>Pilihan terbaik untuk menemani waktu luangmu</p>
           </div>
-          
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <select style={{ padding: '0.6rem 1rem', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'white', fontWeight: 600, outline: 'none' }}>
-              <option>Terbaru</option>
-              <option>Harga Terendah</option>
-              <option>Harga Tertinggi</option>
-              <option>Rating Tertinggi</option>
-            </select>
-          </div>
         </div>
 
         {books.length === 0 ? (
@@ -165,6 +145,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               return (
                 <Link href={`/books/${book.id}`} key={book.id} className="product-card animate-fade-in">
                   <div className="product-image-container">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=Cover+Buku'} alt={book.title} className="product-image" />
                     {book.stock <= 5 && book.stock > 0 && (
                       <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#EF144A', color: 'white', padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800 }}>
@@ -213,7 +194,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
           <div style={{ position: 'relative', zIndex: 1 }}>
             <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem' }}>Jangan Sampai Ketinggalan!</h2>
             <p style={{ opacity: 0.8, marginBottom: '2.5rem', maxWidth: '500px', margin: '0 auto 2.5rem' }}>
-              Dapatkan info buku terbaru dan promo eksklusif langsung di email Anda setiap minggu.
+              Dapatkan info buku terbaru dan promo eksklusif langsung di email Anda.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', maxWidth: '450px', margin: '0 auto' }}>
               <input 
@@ -221,30 +202,11 @@ export default async function Home({ searchParams }: { searchParams: any }) {
                 placeholder="Alamat email Anda..." 
                 style={{ flex: 1, padding: '1rem 1.5rem', borderRadius: '12px', border: 'none', outline: 'none', fontSize: '1rem' }}
               />
-              <button className="btn-primary" style={{ padding: '0 2rem' }}>Berlangganan</button>
+              <button className="btn-primary" style={{ padding: '0 2rem' }}>Daftar</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    );
-  } catch (error: any) {
-    console.error("Home Page Error:", error);
-    return (
-      <div style={{ padding: '4rem 2rem', textAlign: 'center', background: 'white', borderRadius: '32px', marginTop: '2rem', boxShadow: 'var(--shadow-sm)' }}>
-        <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>⚠️</div>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem' }}>Sistem Sedang Bermasalah</h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>Terjadi kesalahan saat memuat halaman.</p>
-        <div style={{ 
-          background: '#fee2e2', color: '#b91c1c', padding: '1rem', 
-          borderRadius: '12px', fontSize: '0.85rem', marginBottom: '2rem',
-          maxWidth: '500px', margin: '0 auto 2rem', textAlign: 'left',
-          fontFamily: 'monospace', overflowX: 'auto'
-        }}>
-          Error: {error.message || "Unknown error"}
-        </div>
-        <Link href="/" className="btn-primary">Coba Muat Ulang</Link>
-      </div>
-    );
-  }
+  );
 }

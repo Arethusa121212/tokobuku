@@ -68,6 +68,11 @@ export default function Navbar() {
                     alt="Profile" 
                     style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)' }} 
                   />
+                  {session.user.name && (
+                    <span style={{ color: 'var(--color-text-primary)', fontWeight: 700, fontSize: '0.85rem' }} className="nav-label">
+                      {session.user.name}
+                    </span>
+                  )}
                 </Link>
 
                 <button 
