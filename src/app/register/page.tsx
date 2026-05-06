@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function Register() {
   const router = useRouter();
@@ -18,6 +19,8 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordValid = password.length >= 8 && /[A-Z]/.test(password);
@@ -39,6 +42,39 @@ export default function Register() {
     setAccountHolder("");
     setImage("");
     setError("");
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 2MB");
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setImage(data.imageUrl);
+        toast.success("Foto berhasil diunggah!");
+      } else {
+        toast.error(data.message || "Gagal mengunggah foto");
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat mengunggah");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -256,16 +292,35 @@ export default function Register() {
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>URL Foto Profil (Opsional)</label>
-          <input
-            type="text"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="https://link-foto.com/foto.jpg"
-            style={inputStyle}
-          />
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>Foto Profil</label>
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            style={{ 
+              width: '100%', padding: '1.5rem', borderRadius: '12px', 
+              border: '2px dashed var(--color-border)', textAlign: 'center',
+              cursor: 'pointer', background: '#f8fafc', transition: 'all 0.2s',
+              position: 'relative', overflow: 'hidden'
+            }}
+          >
+            {image ? (
+              <img src={image} alt="Preview" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{ color: 'var(--color-text-secondary)' }}>
+                <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem' }}>📷</span>
+                <span style={{ fontSize: '0.8rem' }}>{uploading ? "Mengunggah..." : "Klik untuk pilih foto dari laptop"}</span>
+              </div>
+            )}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              hidden 
+              accept="image/*" 
+              onChange={handleImageUpload} 
+              disabled={uploading} 
+            />
+          </div>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem', marginTop: '0.3rem' }}>
-            Biarkan kosong untuk menggunakan avatar otomatis.
+            Opsional. Jika dikosongkan, akan menggunakan avatar otomatis.
           </p>
         </div>
 

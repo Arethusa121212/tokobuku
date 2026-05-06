@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import StoreInteraction from "@/components/StoreInteraction";
@@ -40,8 +39,7 @@ export default async function StorePage({ params }: { params: Promise<{ id: stri
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
-      <Navbar />
-      
+            
       <div className="container" style={{ paddingTop: '2rem', paddingBottom: '5rem' }}>
         {/* Store Header Card */}
         <div style={{
