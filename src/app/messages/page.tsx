@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { pusherClient } from "@/lib/pusher-client";
@@ -14,7 +14,7 @@ interface Conversation {
   messages: any[];
 }
 
-export default function MessagesPage() {
+function MessagesContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get("userId");
@@ -267,3 +267,12 @@ export default function MessagesPage() {
     </div>
   );
 }
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Memuat pesan...</div>}>
+      <MessagesContent />
+    </Suspense>
+  );
+}
+
