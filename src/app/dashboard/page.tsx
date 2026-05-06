@@ -10,22 +10,23 @@ import EditBookButton from "./EditBookButton";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    redirect("/login");
+  }
+
+  if (session.user.role !== "SELLER") {
+    return (
+      <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+        <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Akses Ditolak</h1>
+        <p style={{ color: 'var(--color-text-secondary)' }}>Halaman ini hanya untuk Penjual (Seller).</p>
+        <Link href="/" style={{ color: 'var(--color-primary)', marginTop: '1rem', display: 'inline-block' }}>Kembali ke Beranda</Link>
+      </div>
+    );
+  }
+
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      redirect("/login");
-    }
-
-    if (session.user.role !== "SELLER") {
-      return (
-        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Akses Ditolak</h1>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Halaman ini hanya untuk Penjual (Seller).</p>
-          <Link href="/" style={{ color: 'var(--color-primary)', marginTop: '1rem', display: 'inline-block' }}>Kembali ke Beranda</Link>
-        </div>
-      );
-    }
 
     const books = await prisma.book.findMany({
       where: { sellerId: session.user.id },
