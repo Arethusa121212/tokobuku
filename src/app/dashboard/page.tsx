@@ -62,25 +62,13 @@ export default async function DashboardPage() {
             <p style={{ color: 'var(--color-text-secondary)', fontWeight: 500 }}>Kelola toko, pesanan, dan pesan Anda di sini.</p>
           </div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <Link href="/messages" style={{ 
-              padding: '0.8rem 1.4rem', borderRadius: '12px', border: '1.5px solid #3b82f6', 
-              color: '#3b82f6', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
-              transition: 'all 0.2s', background: 'white'
-            }} onMouseEnter={(e) => e.currentTarget.style.background = '#eff6ff'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
+            <Link href="/messages" className="dashboard-link-blue">
               💬 Pesan Masuk
             </Link>
-            <Link href="/dashboard/settings" style={{ 
-              padding: '0.8rem 1.4rem', borderRadius: '12px', border: '1.5px solid var(--color-text-secondary)', 
-              color: 'var(--color-text-secondary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
-              transition: 'all 0.2s', background: 'white'
-            }} onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
+            <Link href="/dashboard/settings" className="dashboard-link-gray">
               ⚙️ Pengaturan Toko
             </Link>
-            <Link href="/dashboard/orders" style={{ 
-              padding: '0.8rem 1.4rem', borderRadius: '12px', border: '1.5px solid var(--color-primary)', 
-              color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
-              transition: 'all 0.2s', background: 'white'
-            }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-primary-light)'} onMouseLeave={(e) => e.currentTarget.style.background = 'white'}>
+            <Link href="/dashboard/orders" className="dashboard-link-primary">
               📦 Pesanan Masuk
             </Link>
             <Link href="/dashboard/new" className="btn-primary" style={{ padding: '0.8rem 1.6rem', borderRadius: '12px' }}>

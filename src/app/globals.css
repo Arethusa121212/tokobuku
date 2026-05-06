@@ -306,3 +306,52 @@ button {
   }
 }
 
+/* Dashboard Utilities */
+.dashboard-link-blue {
+  padding: 0.8rem 1.4rem;
+  border-radius: 12px;
+  border: 1.5px solid #3b82f6;
+  color: #3b82f6;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  background: white;
+  display: inline-block;
+}
+.dashboard-link-blue:hover {
+  background: #eff6ff !important;
+}
+
+.dashboard-link-gray {
+  padding: 0.8rem 1.4rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-text-secondary);
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  background: white;
+  display: inline-block;
+}
+.dashboard-link-gray:hover {
+  background: #f8fafc !important;
+}
+
+.dashboard-link-primary {
+  padding: 0.8rem 1.4rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  background: white;
+  display: inline-block;
+}
+.dashboard-link-primary:hover {
+  background: var(--color-primary-light) !important;
+}
+
