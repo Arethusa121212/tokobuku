@@ -37,10 +37,13 @@ export default async function DashboardPage() {
 
   // Get orders for seller's books
   const sellerBookIds = books.map(b => b.id);
-  const orderItems = await prisma.orderItem.findMany({
-    where: { bookId: { in: sellerBookIds } },
-  });
+  const orderItems = sellerBookIds.length > 0 
+    ? await prisma.orderItem.findMany({
+        where: { bookId: { in: sellerBookIds } },
+      })
+    : [];
   const totalRevenue = orderItems.reduce((acc, i) => acc + i.price * i.quantity, 0);
+
   const totalOrders = new Set(orderItems.map(i => i.orderId)).size;
 
   const categories = await prisma.category.findMany({
