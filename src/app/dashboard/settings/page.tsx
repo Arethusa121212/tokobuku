@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import toast from "react-hot-toast";
 
@@ -11,6 +12,8 @@ export default function StoreSettings() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -48,6 +51,39 @@ export default function StoreSettings() {
     }
     fetchProfile();
   }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 2MB");
+      return;
+    }
+
+    setUploading(true);
+    const formDataFile = new FormData();
+    formDataFile.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataFile,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setFormData({ ...formData, image: data.imageUrl });
+        toast.success("Foto berhasil diunggah!");
+      } else {
+        toast.error(data.message || "Gagal mengunggah foto");
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat mengunggah");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (session?.user?.role !== "SELLER") {
     return (
@@ -124,14 +160,34 @@ export default function StoreSettings() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>URL Foto Profil / Logo</label>
-                  <input 
-                    type="text" 
-                    value={formData.image}
-                    onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    style={inputStyle} 
-                    placeholder="https://..."
-                  />
+                  <label style={labelStyle}>Logo / Foto Toko</label>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ 
+                      width: '100%', padding: '1rem', borderRadius: '12px', 
+                      border: '2px dashed var(--color-border)', textAlign: 'center',
+                      cursor: 'pointer', background: '#f8fafc', transition: 'all 0.2s',
+                      position: 'relative', overflow: 'hidden', minHeight: '100px',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    {formData.image ? (
+                      <img src={formData.image} alt="Store Logo" style={{ width: '60px', height: '60px', borderRadius: '12px', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ color: 'var(--color-text-secondary)' }}>
+                        <span style={{ fontSize: '1.2rem', display: 'block' }}>📷</span>
+                        <span style={{ fontSize: '0.8rem' }}>{uploading ? "Mengunggah..." : "Klik untuk ganti foto"}</span>
+                      </div>
+                    )}
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      hidden 
+                      accept="image/*" 
+                      onChange={handleImageUpload} 
+                      disabled={uploading} 
+                    />
+                  </div>
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={labelStyle}>Deskripsi Toko</label>
@@ -224,4 +280,3 @@ export default function StoreSettings() {
   );
 }
 
-import Link from "next/link";
