@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 interface StoreInteractionProps {
   storeId: string;
-  storeName: string;
+  storeName: string | null;
 }
 
 export default function StoreInteraction({ storeId, storeName }: StoreInteractionProps) {
