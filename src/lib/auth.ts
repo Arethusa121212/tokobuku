@@ -51,6 +51,11 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
+      // FORCE CLEAR image and picture from token to prevent 494 REQUEST_HEADER_TOO_LARGE
+      // Vercel has a hard limit on cookie size, and base64 images will crash the app.
+      if (token.image) delete token.image;
+      if (token.picture) delete token.picture;
+
       if (user) {
         const u = user as any;
         token.role = u.role;
@@ -61,7 +66,6 @@ export const authOptions: NextAuthOptions = {
       }
       if (trigger === "update" && session) {
         token.name = session.name;
-        token.image = session.image;
         token.bankName = session.bankName;
         token.accountNumber = session.accountNumber;
         token.accountHolder = session.accountHolder;
