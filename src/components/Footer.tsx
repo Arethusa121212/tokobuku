@@ -3,9 +3,11 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer style={{
-      background: '#1e293b',
+      background: 'linear-gradient(135deg, #0f172a 0%, #064e3b 100%)',
       color: '#e2e8f0',
       marginTop: '4rem',
+      borderTop: '4px solid #00AA5B',
+      boxShadow: '0 -4px 20px rgba(0, 170, 91, 0.1)',
     }}>
       <div style={{
         maxWidth: '1200px',
@@ -60,7 +62,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div style={{
-        borderTop: '1px solid #334155',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
         padding: '1.5rem 1rem',
         textAlign: 'center',
         fontSize: '0.85rem',
