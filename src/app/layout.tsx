@@ -35,7 +35,7 @@ export default function RootLayout({
         }}></div>
         <Providers>
           <Navbar />
-          <main className="container" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+          <main style={{ flex: 1, position: 'relative', zIndex: 1 }}>
             {children}
           </main>
           <Footer />

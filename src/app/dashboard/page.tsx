@@ -54,7 +54,7 @@ export default async function DashboardPage() {
     });
 
     return (
-      <div style={{ paddingTop: '2rem' }}>
+      <div className="container" style={{ paddingTop: '2rem' }}>
         <div style={{ 
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', 
           marginBottom: '3.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border)'
