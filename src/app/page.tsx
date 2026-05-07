@@ -79,8 +79,34 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   });
 
   return (
-    <div style={{ paddingBottom: '4rem' }}>
-      {/* Premium Hero Section */}
+    <div style={{ 
+      paddingBottom: '4rem', 
+      backgroundColor: '#f8fafc',
+      backgroundImage: 'radial-gradient(at 0% 30%, #dcfce7 0%, transparent 60%), radial-gradient(at 100% 80%, #dcfce7 0%, transparent 60%)',
+      position: 'relative',
+      minHeight: '100vh',
+      overflow: 'hidden'
+    }}>
+      {/* Background Watermark */}
+      <div style={{
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        transform: 'translate(-50%, -50%) rotate(-5deg)',
+        fontSize: 'clamp(6rem, 18vw, 16rem)',
+        fontWeight: 900,
+        color: 'rgba(0, 170, 91, 0.03)',
+        whiteSpace: 'nowrap',
+        pointerEvents: 'none',
+        zIndex: 0,
+        userSelect: 'none',
+        letterSpacing: '-2px'
+      }}>
+        TOKO BUKU
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        {/* Premium Hero Section */}
       <div className="hero-gradient" style={{
         color: 'white', padding: '5rem 1.5rem', borderRadius: '0 0 40px 40px',
         marginBottom: '2.5rem', textAlign: 'center', margin: '0 -1rem',
@@ -295,6 +321,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
               <button className="btn-primary">Daftar</button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
