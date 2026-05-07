@@ -17,10 +17,25 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
+        {/* Global Full Screen Background Logo Watermark */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundImage: 'url(/tokobuku_logo.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.03,
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}></div>
         <Providers>
           <Navbar />
-          <main className="container" style={{ flex: 1 }}>
+          <main className="container" style={{ flex: 1, position: 'relative', zIndex: 1 }}>
             {children}
           </main>
           <Footer />

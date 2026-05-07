@@ -87,23 +87,7 @@ export default async function Home({ searchParams }: { searchParams: any }) {
       minHeight: '100vh',
       overflow: 'hidden'
     }}>
-      {/* Background Watermark */}
-      <div style={{
-        position: 'absolute',
-        top: '40%',
-        left: '50%',
-        transform: 'translate(-50%, -50%) rotate(-5deg)',
-        fontSize: 'clamp(6rem, 18vw, 16rem)',
-        fontWeight: 900,
-        color: 'rgba(0, 170, 91, 0.03)',
-        whiteSpace: 'nowrap',
-        pointerEvents: 'none',
-        zIndex: 0,
-        userSelect: 'none',
-        letterSpacing: '-2px'
-      }}>
-        TOKO BUKU
-      </div>
+      {/* Background Logo dipindahkan ke layout.tsx agar global */}
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Premium Hero Section */}
